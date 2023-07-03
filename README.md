@@ -12,7 +12,9 @@ To look meta information need to [exiftool](https://exiftool.org)
 * Shows images (png,jpg,jpeg,webp) created with stable diffusion 
 * Shows prompts, negative prompts, etc. if exiftool is available
 * Prompts and negative prompts can be copied to clipboard with one click
-* Allows you to flip to the previous/next(filename order) image in the same directory (on Windows)
+* Navigate to previous/next image in the same directory (on Mac, only when dragging and dropping directories)
+
+Currently only supports images created with A1111
 
 ## Run and Build
 
