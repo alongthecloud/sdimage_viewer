@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sdimage_viewer/Controller/ViewerStateController.dart';
 import 'package:simple_logger/simple_logger.dart';
@@ -10,7 +11,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Must add this line.
   await windowManager.ensureInitialized();
-  // FFI Initialization.
+
+  final logger = SimpleLogger();
+  if (kReleaseMode) {
+    logger.setLevel(Level.WARNING);
+  }
 
   runApp(const MyApp());
 }
@@ -22,44 +27,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WindowListener {
-  @override
-  void initState() {
-    super.initState();
-    windowManager.addListener(this);
-  }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
-
-  @override
-  void onWindowMaximize() {
-    super.onWindowMaximize();
-    windowManager.getSize().then((size) {
-      // WindowEventController.to.updateWindowSize();
-    });
-  }
-
-  @override
-  void onWindowUnmaximize() {
-    super.onWindowUnmaximize();
-    windowManager.getSize().then((size) {
-      // WindowEventController.to.updateWindowSize();
-    });
-  }
-
-  @override
-  void onWindowResize() {
-    super.onWindowResize();
-
-    windowManager.getSize().then((size) {
-      // WindowEventController.to.updateWindowSize();
-    });
-  }
-
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Get.put(WindowEventController());
