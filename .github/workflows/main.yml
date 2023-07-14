@@ -29,6 +29,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_TOKEN }}
           files: build/windows/runner/Release/SDImageViewer-${{github.ref_name}}-windows.zip
           
