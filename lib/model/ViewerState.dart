@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:sdimage_viewer/ExifToolExec.dart';
@@ -16,7 +17,7 @@ class ViewerState {
   String curImagePath = "";
 
   int curImageIndex = -1;
-  Uint8List? curImageData;
+  ui.Image? curImageData;
   MetaData curImageMetaData = MetaData();
 
   String getCurrentPositionText() {
