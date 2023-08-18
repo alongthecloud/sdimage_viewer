@@ -42,7 +42,7 @@ class MetadataView {
 
     Widget keyWidget;
     Widget valueWidget;
-    if (key == MetaKeyword.Parameters || key == MetaKeyword.Negative_prompt) {
+    if (key == MetaKeyword.Prompt || key == MetaKeyword.Negative_prompt) {
       keyWidget = InkWell(
         onTap: () {
           FlutterClipboard.copy(value).then((value) {

@@ -50,6 +50,9 @@ class _ImageViewState extends State<ImageView> {
     childWidgets.add(const VerticalDivider());
 
     var sideItems = <Widget>[];
+
+    sideItems.add(Text(viewerState.curImageMetaData.imageType));
+
     if (metaTable.isNotEmpty) {
       sideItems.add(MetadataView.build(context, metaTable));
     }
