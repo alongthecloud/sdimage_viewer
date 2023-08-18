@@ -1,18 +1,24 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 class ImageManager {
-  Future<Uint8List?> getImageDataFromFile(String imagePath) async {
+  Future<ui.Image?> getImageDataFromFile(String imagePath) async {
     File file = File(imagePath);
     if (file.existsSync() == false) {
       return null;
     }
 
-    Uint8List u8data = file.readAsBytesSync();
-    if (u8data.isEmpty) {
+    ui.Image? image;
+
+    try {
+      var byteData = await file.readAsBytes();
+      ui.Codec result = await ui.instantiateImageCodec(byteData);
+      ui.FrameInfo frame = await result.getNextFrame();
+      image = frame.image;
+    } catch (e) {
       return null;
     }
 
-    return u8data;
+    return image;
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as Path;
@@ -22,12 +23,14 @@ class _ImageViewState extends State<ImageView> {
     super.initState();
   }
 
-  Widget _getImageWidget(Uint8List? imageData) {
-    if (imageData == null) {
+  Widget _getImageWidget(ui.Image? image) {
+    if (image == null) {
       return const SizedBox.shrink();
     } else {
-      return Image.memory(imageData,
-          fit: BoxFit.contain, filterQuality: FilterQuality.medium);
+      return RawImage(
+          image: image,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium);
     }
   }
 
