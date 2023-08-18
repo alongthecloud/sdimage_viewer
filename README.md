@@ -14,7 +14,9 @@ To look meta information need to [exiftool](https://exiftool.org)
 * Prompts and negative prompts can be copied to clipboard with one click
 * Navigate to previous/next image in the same directory (on Mac, only when dragging and dropping directories)
 
-Currently only supports images created with A1111
+Supported
+ - [x] A1111
+ - [x] InvokeAI
 
 ## Run and Build
 
