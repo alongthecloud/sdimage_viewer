@@ -1,5 +1,7 @@
 # Stable Diffusion Image Viewer
 
+[한국어](README-KR.md)
+
 A Flutter-based stable diffusion image viewer for displaying images and information
 
 ## Introduction
@@ -47,7 +49,7 @@ If you are using [brew](https://brew.sh), you can install exiftool with the foll
 Drag and drop images to the window
 
 1. if you have exiftool installed, you will see the information on the right panel
-2. click on the parameters and negative prompt to copy contents to the clipboard
+2. click on the prompt and negative prompt to copy contents to the clipboard
 3. click on model hash to go to civitai site
 
 If you drag and drop a directory containing images, the first image in that directory will appear and you can move to the previous/next image by arrow keys.
