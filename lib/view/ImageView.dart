@@ -28,9 +28,7 @@ class _ImageViewState extends State<ImageView> {
       return const SizedBox.shrink();
     } else {
       return RawImage(
-          image: image,
-          fit: BoxFit.contain,
-          filterQuality: FilterQuality.medium);
+          image: image, fit: BoxFit.contain, filterQuality: FilterQuality.high);
     }
   }
 

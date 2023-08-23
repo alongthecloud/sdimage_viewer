@@ -137,7 +137,12 @@ class MetadataParserA1111 extends MetadataParser {
   void _parseParameter(String metaText) {
     if (metaText.isEmpty) return;
 
-    int promptEndIndex = metaText.indexOf(MetaKeyword.Negative_prompt);
+    var negativePromptKeyword =
+        MetaKeywordTable.A1111[MetaKeyword.Negative_prompt];
+
+    int promptEndIndex = negativePromptKeyword == null
+        ? -1
+        : metaText.indexOf(negativePromptKeyword);
     if (promptEndIndex == -1) {
       var index = metaText.indexOf(":");
       if (index != -1) index = metaText.length;
