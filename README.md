@@ -29,11 +29,14 @@ You need Flutter and Visual Studio or XCode to run and build for desktop app.
 
 ## Install exiftool
 ### Windows
-1. download the program from https://exiftool.org
-2. rename the executable file to 'exiftool.exe' and place it in the same directory of this program or execution path
+Using the 'App Installer' makes installation easy
+
+1. If you don't have the App Installer, install it from [here](https://www.microsoft.com/p/app-installer/9nblggh4nns1).
+2. After installation, open up command prompt window.
+3. ```winget install ExifTool``` in command prompt window. You will see the installation screen and the installation will proceed.
 
 ### Mac
-If you are using brew, you can install exiftool with the following command
+If you are using [brew](https://brew.sh), you can install exiftool with the following command
 
 ```brew install exiftool```
 
