@@ -20,7 +20,7 @@ class MetadataView {
   static Widget _tableView(BuildContext context, Map<String, String> table) {
     var rows = <TableRow>[];
     table.forEach((key, value) {
-      TableRow row = _tableRow(key, value);
+      TableRow row = _tableRow(context, key, value);
       rows.add(row);
     });
 
@@ -37,7 +37,7 @@ class MetadataView {
         });
   }
 
-  static TableRow _tableRow(String key, String value) {
+  static TableRow _tableRow(BuildContext context, String key, String value) {
     var logger = SimpleLogger();
 
     Widget keyWidget;
@@ -46,9 +46,12 @@ class MetadataView {
       keyWidget = InkWell(
         onTap: () {
           FlutterClipboard.copy(value).then((value) {
-            showToastWidget(Text("$key copied!",
-                style:
+            var notificationWidget = Text("$key copied!",
+                style: Theme.of(context).textTheme.displaySmall?.merge(
                     TextStyle(backgroundColor: Colors.grey.withOpacity(0.5))));
+
+            showToastWidget(notificationWidget,
+                duration: const Duration(seconds: 1));
             logger.info("$key copied!");
           });
         },
