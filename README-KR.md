@@ -28,12 +28,16 @@
 4. `flutter build` 명령으로 빌드할 수 있습니다
 
 ## exiftool 설치 방법
+
 ### Windows
-1. https://exiftool.org 에서 프로그램을 다운로드 합니다
-2. 실행 파일의 이름을 exiftool.exe 로 바꾸고, 이 프로그램과 같은 디렉토리 또는 실행 경로에 둡니다
+'앱 설치 관리자'를 사용하면 쉽게 설치할 수 있습니다
+
+1. 만일 앱 설치 관리자가 없다면 [여기](https://www.microsoft.com/p/app-installer/9nblggh4nns1) 에서 앱 설치 관리자를 설치하세요.
+2. 설치가 끝나면 명령 프롬프트 창을 띄웁니다.
+3. 명령 프롬프트 창에서 ```winget install ExifTool``` 을 실행합니다. 그러면 설치 화면이 뜨면서 설치가 진행됩니다.
 
 ### Mac
-당신이 만일 brew 를 쓰고 있다면 다음 명령으로 exiftool 을 설치할 수 있습니다
+당신이 만일 [brew](https://brew.sh) 를 쓰고 있다면 다음 명령으로 exiftool 을 설치할 수 있습니다
 
 ```brew install exiftool```
 
