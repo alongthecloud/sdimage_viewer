@@ -134,25 +134,30 @@ class MetadataParserA1111 extends MetadataParser {
     return true;
   }
 
-  void _parseParameter(String metaText) {
-    if (metaText.isEmpty) return;
+  int _findEndOf(String metaText, int startIdx, String nextKey) {
+    String? nextKeyword = MetaKeywordTable.A1111[nextKey];
 
-    var negativePromptKeyword =
-        MetaKeywordTable.A1111[MetaKeyword.Negative_prompt];
+    int endIndex = nextKeyword == null ? -1 : metaText.indexOf(nextKeyword);
+    if (endIndex == -1) {
+      var index = metaText.indexOf(":", startIdx);
+      if (index == -1) index = metaText.length;
 
-    int promptEndIndex = negativePromptKeyword == null
-        ? -1
-        : metaText.indexOf(negativePromptKeyword);
-    if (promptEndIndex == -1) {
-      var index = metaText.indexOf(":");
-      if (index != -1) index = metaText.length;
-      for (var i = index - 1; i >= 0; i--) {
+      for (var i = index - 1; i >= startIdx; i--) {
         if (metaText[i] == '\n') {
-          promptEndIndex = i;
+          endIndex = i;
           break;
         }
       }
     }
+
+    return endIndex;
+  }
+
+  void _parseParameter(String metaText) {
+    if (metaText.isEmpty) return;
+
+    var promptEndIndex = _findEndOf(metaText, 0, MetaKeyword.Negative_prompt);
+    if (promptEndIndex == -1) return;
 
     String? promptKeyword = MetaKeywordTable.A1111[MetaKeyword.Prompt];
     if (promptKeyword == null) {
@@ -166,7 +171,9 @@ class MetadataParserA1111 extends MetadataParser {
       _addTable(MetaKeyword.Prompt, metaText.substring(0, promptEndIndex));
     }
 
-    int negativePromptEndIndex = metaText.indexOf("\n", promptEndIndex + 1);
+    int negativePromptEndIndex =
+        _findEndOf(metaText, promptEndIndex, MetaKeyword.Steps);
+
     _addParam(metaText, MetaKeyword.Negative_prompt,
         nextIdx: negativePromptEndIndex);
 
