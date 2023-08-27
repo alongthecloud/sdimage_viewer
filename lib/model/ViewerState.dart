@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:sdimage_viewer/ExifToolExec.dart';
 import 'package:simple_logger/simple_logger.dart';
@@ -55,15 +53,20 @@ class ViewerState {
     logger.info(
         "Image: $curImagePath : $curImageIndex / ${imageFileList.length}");
 
-    String? exif = await ExifToolExec.run(curImagePath);
-    if (exif != null) {
-      curImageMetaData.fromJson(exif);
-    } else {
-      curImageMetaData.clear();
-    }
+    await Future.wait([
+      ExifToolExec.run(curImagePath).then((String? value) {
+        if (value != null) {
+          curImageMetaData.fromJson(value);
+        } else {
+          curImageMetaData.clear();
+        }
+      }),
+      _imageManager
+          .getImageDataFromFile(curImagePath)
+          .then((value) => curImageData = value)
+    ]);
 
-    curImageData = await _imageManager.getImageDataFromFile(curImagePath);
-    return true;
+    return curImageData != null ? true : false;
   }
 
   int _getImageFileList(Directory dir) {
