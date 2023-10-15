@@ -9,6 +9,7 @@ import 'package:window_manager/window_manager.dart';
 import '../model/ViewerState.dart';
 import '../Controller/ViewerStateController.dart';
 import './MetadataView.dart';
+import './HelpView.dart';
 
 class ImageView extends StatefulWidget {
   const ImageView({super.key});
@@ -53,7 +54,6 @@ class _ImageViewState extends State<ImageView> {
     var sideItems = <Widget>[];
 
     sideItems.add(Text(viewerState.curImageMetaData.imageType));
-
     if (metaTable.isNotEmpty) {
       sideItems.add(MetadataView.build(context, metaTable));
     }
@@ -61,7 +61,20 @@ class _ImageViewState extends State<ImageView> {
     var sideWidget = Container(
         padding: const EdgeInsets.fromLTRB(1, 10, 3, 10),
         width: 400,
-        child: ListView(shrinkWrap: true, children: sideItems));
+        child: Column(children: [
+          ButtonBar(children: [
+            IconButton(
+                icon: const Icon(Icons.help),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HelpView()));
+                }),
+          ]),
+          const SizedBox(height: 10),
+          ListView(shrinkWrap: true, children: sideItems),
+        ]));
 
     childWidgets.add(sideWidget);
 
