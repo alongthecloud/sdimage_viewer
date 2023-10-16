@@ -1,8 +1,13 @@
-import 'package:get/get.dart';
+import 'package:flutter/widgets.dart';
 import '../model/ViewerState.dart';
 
-class ViewerStateController extends GetxController {
-  static ViewerStateController get to => Get.find();
+class ViewStateProvider extends ChangeNotifier {
+  ViewStateProvider._privateConstructor();
+  static final ViewStateProvider _instance =
+      ViewStateProvider._privateConstructor();
+  factory ViewStateProvider() {
+    return _instance;
+  }
 
   ViewerState viewerState = ViewerState();
 
@@ -30,5 +35,9 @@ class ViewerStateController extends GetxController {
     if (result) {
       update();
     }
+  }
+
+  void update() {
+    notifyListeners();
   }
 }

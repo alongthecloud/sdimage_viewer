@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:window_manager/window_manager.dart';
+import '../provider/ViewStateProvider.dart';
 import '../model/ViewerState.dart';
-import '../Controller/ViewerStateController.dart';
 import './MetadataView.dart';
 import './HelpView.dart';
 
@@ -36,8 +36,9 @@ class _ImageViewState extends State<ImageView> {
   Widget _bodyWidget(BuildContext context) {
     var logger = SimpleLogger();
 
-    ViewerStateController viewerStateController = ViewerStateController.to;
-    ViewerState viewerState = viewerStateController.viewerState;
+    ViewStateProvider viewStateProvider =
+        Provider.of<ViewStateProvider>(context, listen: false);
+    ViewerState viewerState = viewStateProvider.viewerState;
 
     var imageFilename = Path.basename(viewerState.curImagePath);
     windowManager.setTitle(imageFilename);
@@ -72,7 +73,7 @@ class _ImageViewState extends State<ImageView> {
                           builder: (context) => const HelpView()));
                 }),
           ]),
-          const SizedBox(height: 10),
+          const SizedBox(height: 4),
           ListView(shrinkWrap: true, children: sideItems),
         ]));
 
@@ -87,13 +88,13 @@ class _ImageViewState extends State<ImageView> {
       IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            viewerStateController.getPreviousImage();
+            viewStateProvider.getPreviousImage();
           }),
-      Text(viewerStateController.getCurrentPositionText()),
+      Text(viewStateProvider.getCurrentPositionText()),
       IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: () {
-            viewerStateController.getNextImage();
+            viewStateProvider.getNextImage();
           }),
     ];
 
@@ -110,10 +111,10 @@ class _ImageViewState extends State<ImageView> {
           if (event.runtimeType == RawKeyDownEvent) {
             switch (event.physicalKey) {
               case PhysicalKeyboardKey.arrowLeft:
-                viewerStateController.getPreviousImage();
+                viewStateProvider.getPreviousImage();
                 break;
               case PhysicalKeyboardKey.arrowRight:
-                viewerStateController.getNextImage();
+                viewStateProvider.getNextImage();
                 break;
             }
           }
@@ -127,8 +128,6 @@ class _ImageViewState extends State<ImageView> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ViewerStateController>(builder: (controller) {
-      return _bodyWidget(context);
-    });
+    return _bodyWidget(context);
   }
 }
