@@ -10,6 +10,8 @@ import '../provider/ViewStateProvider.dart';
 import '../model/ViewerState.dart';
 import './MetadataView.dart';
 import './HelpView.dart';
+import '../util/WidgetUtil.dart';
+import '../util/Util.dart';
 
 class ImageView extends StatefulWidget {
   const ImageView({super.key});
@@ -52,16 +54,29 @@ class _ImageViewState extends State<ImageView> {
         .add(Expanded(child: _getImageWidget(viewerState.curImageData)));
     childWidgets.add(const VerticalDivider());
 
+    // Right side panel
     var sideItems = <Widget>[];
+    StringBuffer sb = StringBuffer();
+    sb.write(viewerState.curImageMetaData.imageType);
+    if (viewerState.curImageData != null) {
+      sb.write(
+          ' ${viewerState.curImageData!.width}x${viewerState.curImageData!.height}');
+    }
 
-    sideItems.add(Text(viewerState.curImageMetaData.imageType));
+    sideItems.add(Text(sb.toString()));
+    sideItems.add(const Divider(thickness: 0.1));
     if (metaTable.isNotEmpty) {
+      sideItems.add(WidgetUtil.iconButton(
+          WidgetUtil.ContentCopyIcon, const Text("Meta-data"), () {
+        var value = metaTable.toString();
+        Util.copy2clipboard(context, "Meta-data", value);
+      }));
       sideItems.add(MetadataView.build(context, metaTable));
     }
 
     var sideWidget = Container(
         padding: const EdgeInsets.fromLTRB(1, 10, 3, 10),
-        width: 400,
+        width: 380,
         child: Column(children: [
           ButtonBar(children: [
             IconButton(

@@ -6,6 +6,8 @@ import 'package:simple_logger/simple_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../util/MetaKeyword.dart';
+import '../util/WidgetUtil.dart';
+import '../util/Util.dart';
 
 class MetadataView {
   static Widget build(BuildContext context, Map<String, String> metaTable) {
@@ -38,28 +40,13 @@ class MetadataView {
   }
 
   static TableRow _tableRow(BuildContext context, String key, String value) {
-    var logger = SimpleLogger();
-
     Widget keyWidget;
     Widget valueWidget;
     if (key == MetaKeyword.Prompt || key == MetaKeyword.Negative_prompt) {
-      keyWidget = InkWell(
-        onTap: () {
-          FlutterClipboard.copy(value).then((value) {
-            var notificationWidget = Text("$key copied!",
-                style: Theme.of(context).textTheme.displaySmall?.merge(
-                    TextStyle(backgroundColor: Colors.grey.withOpacity(0.5))));
-
-            showToastWidget(notificationWidget,
-                duration: const Duration(seconds: 1));
-            logger.info("$key copied!");
-          });
-        },
-        child: Wrap(children: [
-          Text(key,
-              style: const TextStyle(decoration: TextDecoration.underline)),
-        ]),
-      );
+      keyWidget =
+          WidgetUtil.iconButton(WidgetUtil.ContentCopyIcon, Text(key), () {
+        Util.copy2clipboard(context, key, value);
+      });
 
       valueWidget = ExpandableText(value,
           expandOnTextTap: true,
@@ -68,19 +55,7 @@ class MetadataView {
           maxLines: 4);
     } else {
       keyWidget = Text(key);
-      if (key == MetaKeyword.Model_hash) {
-        valueWidget = InkWell(
-          onTap: () {
-            final Uri url = Uri.parse('https://civitai.com/?query=$value');
-            launchUrl(url);
-          },
-          child: Wrap(children: [
-            Text(value,
-                style: const TextStyle(decoration: TextDecoration.underline)),
-            const Icon(Icons.outbound_outlined, size: 18),
-          ]),
-        );
-      } else if (key == MetaKeyword.Model) {
+      if (key == MetaKeyword.Model) {
         valueWidget =
             Text(value, style: const TextStyle(fontWeight: FontWeight.bold));
       } else {

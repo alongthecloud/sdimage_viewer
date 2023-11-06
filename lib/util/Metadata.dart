@@ -15,16 +15,6 @@ class MetaData {
     List<dynamic> jsonData = jsonDecode(jsonText);
     Map<String, dynamic> firstData = jsonData[0] as Map<String, dynamic>;
 
-    var imageWidth = firstData["ImageWidth"];
-    var imageHeight = firstData["ImageHeight"];
-
-    if (imageWidth != null) {
-      _metaTable["ImageWidth"] = imageWidth.toString();
-    }
-    if (imageHeight != null) {
-      _metaTable["ImageHeight"] = imageHeight.toString();
-    }
-
     imageType = "";
 
     const String InvokeAIMetaKey = "Invokeai_metadata";

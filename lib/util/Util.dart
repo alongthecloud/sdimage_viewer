@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:intl/intl.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
+import 'package:clipboard/clipboard.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:simple_logger/simple_logger.dart';
 
 class Util {
@@ -21,13 +23,17 @@ class Util {
     return formatter.format(date);
   }
 
-  static Widget basicHelloWorldWidget(
-      BuildContext context, List<String> texts) {
-    return ListView.builder(
-      itemCount: texts.length,
-      itemBuilder: (context, index) => Container(
-          padding: const EdgeInsets.all(4), child: Text(texts[index])),
-    );
+  static void copy2clipboard(BuildContext context, key, value) {
+    FlutterClipboard.copy(value).then((value) {
+      var notificationWidget = Text("$key copied!",
+          style: Theme.of(context).textTheme.displaySmall?.merge(
+              TextStyle(backgroundColor: Colors.grey.withOpacity(0.5))));
+
+      showToastWidget(notificationWidget, duration: const Duration(seconds: 1));
+
+      var logger = SimpleLogger();
+      logger.info("$key copied!");
+    });
   }
 
   // Json 을 읽기
