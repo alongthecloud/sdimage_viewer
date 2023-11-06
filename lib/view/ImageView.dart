@@ -86,15 +86,25 @@ class _ImageViewState extends State<ImageView> {
 
     var buttonBarItems = <Widget>[
       IconButton(
+          icon: const Icon(Icons.keyboard_double_arrow_left),
+          onPressed: () {
+            viewStateProvider.moveToFirstImage();
+          }),
+      IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            viewStateProvider.getPreviousImage();
+            viewStateProvider.moveToPreviousImage();
           }),
       Text(viewStateProvider.getCurrentPositionText()),
       IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: () {
-            viewStateProvider.getNextImage();
+            viewStateProvider.moveToNextImage();
+          }),
+      IconButton(
+          icon: const Icon(Icons.keyboard_double_arrow_right),
+          onPressed: () {
+            viewStateProvider.moveToLastImage();
           }),
     ];
 
@@ -111,10 +121,18 @@ class _ImageViewState extends State<ImageView> {
           if (event.runtimeType == RawKeyDownEvent) {
             switch (event.physicalKey) {
               case PhysicalKeyboardKey.arrowLeft:
-                viewStateProvider.getPreviousImage();
+                viewStateProvider.moveToPreviousImage();
                 break;
               case PhysicalKeyboardKey.arrowRight:
-                viewStateProvider.getNextImage();
+                viewStateProvider.moveToNextImage();
+                break;
+
+              case PhysicalKeyboardKey.home:
+                viewStateProvider.moveToFirstImage();
+                break;
+
+              case PhysicalKeyboardKey.end:
+                viewStateProvider.moveToLastImage();
                 break;
             }
           }
