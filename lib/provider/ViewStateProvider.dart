@@ -23,15 +23,24 @@ class ViewStateProvider extends ChangeNotifier {
     return viewerState.getCurrentPositionText();
   }
 
-  void getNextImage() async {
-    bool result = await viewerState.getNextImage();
-    if (result) {
-      update();
-    }
+  void moveToNextImage() async {
+    updateWhenTrue(viewerState.moveToNext());
   }
 
-  void getPreviousImage() async {
-    bool result = await viewerState.getPreviousImage();
+  void moveToPreviousImage() async {
+    updateWhenTrue(viewerState.moveToPrev());
+  }
+
+  void moveToFirstImage() async {
+    updateWhenTrue(viewerState.moveToFirst());
+  }
+
+  void moveToLastImage() async {
+    updateWhenTrue(viewerState.moveToLast());
+  }
+
+  void updateWhenTrue(Future<bool> func) async {
+    bool result = await func;
     if (result) {
       update();
     }
