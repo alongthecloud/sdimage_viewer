@@ -23,12 +23,8 @@ class ViewStateProvider extends ChangeNotifier {
     return viewerState.getCurrentPositionText();
   }
 
-  void moveToNextImage() async {
-    updateWhenTrue(viewerState.moveToNext());
-  }
-
-  void moveToPreviousImage() async {
-    updateWhenTrue(viewerState.moveToPrev());
+  void moveToRelativeStep(int step) async {
+    updateWhenTrue(viewerState.moveToRelativeStep(step));
   }
 
   void moveToFirstImage() async {
