@@ -62,9 +62,13 @@ class _MyDropRegion extends State<MyDropRegion> {
   Widget _mainWidgets(
       BuildContext context, ViewStateProvider viewStateProvider) {
     ViewerState viewerState = viewStateProvider.viewerState;
+    // left to right
     var childWidgets = [
-      Expanded(child: ImageView(viewerState: viewerState)),
-      const VerticalDivider(),
+      Expanded(
+          child: Container(
+              margin: const EdgeInsets.fromLTRB(1, 1, 0, 1),
+              child: ImageView(viewerState: viewerState))),
+      const VerticalDivider(thickness: 1, width: 5),
       ImagePropertyView(viewerState: viewerState)
     ]; // return Container(color: Colors.grey, child: childWidget);
     return Row(
