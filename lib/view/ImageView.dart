@@ -10,6 +10,7 @@ import '../provider/ViewStateProvider.dart';
 import '../model/ViewerState.dart';
 import './MetadataView.dart';
 import './HelpView.dart';
+import './SettingsView.dart';
 import '../util/WidgetUtil.dart';
 import '../util/Util.dart';
 
@@ -74,20 +75,26 @@ class _ImageViewState extends State<ImageView> {
       sideItems.add(MetadataView.build(context, metaTable));
     }
 
+    var rightButtonBar = ButtonBar(children: [
+      IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SettingsView()));
+          }),
+      IconButton(
+          icon: const Icon(Icons.help),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const HelpView()));
+          }),
+    ]);
+
     var sideWidget = Container(
         padding: const EdgeInsets.fromLTRB(1, 10, 3, 10),
         width: 380,
         child: Column(children: [
-          ButtonBar(children: [
-            IconButton(
-                icon: const Icon(Icons.help),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HelpView()));
-                }),
-          ]),
+          rightButtonBar,
           const SizedBox(height: 4),
           ListView(shrinkWrap: true, children: sideItems),
         ]));
@@ -99,7 +106,7 @@ class _ImageViewState extends State<ImageView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: childWidgets);
 
-    var buttonBarItems = <Widget>[
+    var bottomBarItems = <Widget>[
       IconButton(
           icon: const Icon(Icons.keyboard_double_arrow_left),
           onPressed: () {
@@ -123,11 +130,11 @@ class _ImageViewState extends State<ImageView> {
           }),
     ];
 
-    Widget buttonBar = Row(
+    var bottomBar = Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: viewerState.curImageIndex != -1
-            ? buttonBarItems
+            ? bottomBarItems
             : const <Widget>[]);
 
     return RawKeyboardListener(
@@ -154,7 +161,7 @@ class _ImageViewState extends State<ImageView> {
         },
         child: Column(children: [
           Expanded(child: childWidget),
-          Container(color: Colors.white, height: 42, child: buttonBar),
+          Container(color: Colors.white, height: 42, child: bottomBar),
         ]));
     // return Container(color: Colors.grey, child: childWidget);
   }
