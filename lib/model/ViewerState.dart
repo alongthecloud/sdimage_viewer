@@ -25,7 +25,7 @@ class ViewerState {
     return "${curImageIndex + 1} / ${imageFileList.length}";
   }
 
-  Future<bool> _moveToRelativeStep(int step) async {
+  Future<bool> moveToRelativeStep(int step) async {
     int nextIndex = (curImageIndex + step);
     if (imageFileList.isEmpty) return false;
     if (nextIndex >= imageFileList.length) nextIndex = imageFileList.length - 1;
@@ -33,14 +33,6 @@ class ViewerState {
 
     curImageIndex = nextIndex;
     return await updateImage();
-  }
-
-  Future<bool> moveToNext() async {
-    return await _moveToRelativeStep(1);
-  }
-
-  Future<bool> moveToPrev() async {
-    return await _moveToRelativeStep(-1);
   }
 
   Future<bool> moveToFirst() async {

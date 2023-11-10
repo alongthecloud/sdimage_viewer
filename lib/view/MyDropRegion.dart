@@ -35,13 +35,13 @@ class _MyDropRegion extends State<MyDropRegion> {
       IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            viewStateProvider.moveToPreviousImage();
+            viewStateProvider.moveToRelativeStep(-1);
           }),
       Text(viewStateProvider.getCurrentPositionText()),
       IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: () {
-            viewStateProvider.moveToNextImage();
+            viewStateProvider.moveToRelativeStep(1);
           }),
       IconButton(
           icon: const Icon(Icons.keyboard_double_arrow_right),
@@ -90,16 +90,20 @@ class _MyDropRegion extends State<MyDropRegion> {
           if (event.runtimeType == RawKeyDownEvent) {
             switch (event.physicalKey) {
               case PhysicalKeyboardKey.arrowLeft:
-                viewStateProvider.moveToPreviousImage();
+                viewStateProvider.moveToRelativeStep(-1);
                 break;
               case PhysicalKeyboardKey.arrowRight:
-                viewStateProvider.moveToNextImage();
+                viewStateProvider.moveToRelativeStep(1);
                 break;
-
+              case PhysicalKeyboardKey.arrowDown:
+                viewStateProvider.moveToRelativeStep(-10);
+                break;
+              case PhysicalKeyboardKey.arrowUp:
+                viewStateProvider.moveToRelativeStep(10);
+                break;
               case PhysicalKeyboardKey.home:
                 viewStateProvider.moveToFirstImage();
                 break;
-
               case PhysicalKeyboardKey.end:
                 viewStateProvider.moveToLastImage();
                 break;

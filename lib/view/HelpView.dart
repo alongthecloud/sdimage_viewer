@@ -23,7 +23,9 @@ class HelpView extends StatelessWidget {
   ### Functions of buttons
 
   * ![help](icon://f0555) : Show this help.
-  * Keyboard shortcuts Left Arrow, Right Arrow, Home, and End move to the previous image, next image, first image, and last image.
+  * Keyboard shortcuts 
+    * The Left Arrow, Right Arrow, Home, and End Key moves to the previous image, next image, first image, and last image.
+    * The Up arrow key moves to an image 10 steps previous, The Down arrow key moves to an image 10 steps next.
 
   ### Used flutter libraries
     clipboard,desktop_drop,expandable_text,flutter_markdown,get,image,oktoast,path_provider,settings_ui,simple_logger,url_launcher,window_manager
