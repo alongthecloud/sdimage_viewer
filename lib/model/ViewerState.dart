@@ -12,7 +12,7 @@ import '../provider/ViewStateProvider.dart';
 class ViewerState {
   final ImageManager _imageManager = ImageManager();
 
-  List<String> imageFileList = [];
+  List<FileSystemEntity> imageFileList = [];
   String curImagePath = "";
 
   int curImageIndex = -1;
@@ -57,7 +57,7 @@ class ViewerState {
     if (curImagePath.isEmpty) return false;
 
     if (curImageIndex >= 0 && imageFileList.isNotEmpty) {
-      curImagePath = imageFileList[curImageIndex];
+      curImagePath = imageFileList[curImageIndex].path;
     }
 
     var logger = SimpleLogger();
@@ -95,12 +95,8 @@ class ViewerState {
 
     if (files.isEmpty) return 0;
 
-    imageFileList.clear();
-    for (var f in files) {
-      imageFileList.add(f.path);
-    }
-
-    imageFileList.sort();
+    imageFileList = files;
+    imageFileList.sort((a, b) => a.path.compareTo(b.path));
     return imageFileList.length;
   }
 
@@ -148,12 +144,13 @@ class ViewerState {
       if (pathIsDir) {
         curImageIndex = 0;
       } else {
-        var index = imageFileList.indexOf(targetPath);
+        var index =
+            imageFileList.indexWhere((element) => element.path == targetPath);
         if (index == -1) return false;
         curImageIndex = index;
       }
 
-      curImagePath = imageFileList[curImageIndex];
+      curImagePath = imageFileList[curImageIndex].path;
     }
 
     if (eventSub != null) {
