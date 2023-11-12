@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:expandable_text/expandable_text.dart';
 import '../model/ViewerState.dart';
+import '../model/AppConfig.dart';
 import './HelpView.dart';
 import './SettingsView.dart';
 import '../util/WidgetUtil.dart';
@@ -67,13 +70,19 @@ class ImagePropertyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var metaTable = viewerState.curImageMetaData.getMetaTable();
+    var appConfigProvider =
+        Provider.of<AppConfigProvider>(context, listen: false);
 
     Widget rightButtonBar = ButtonBar(children: [
       IconButton(
           icon: const Icon(Icons.settings),
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SettingsView()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return SettingsView(appConfig: appConfigProvider.appConfig);
+            })).then((value) {
+              appConfigProvider.update();
+              return null;
+            });
           }),
       IconButton(
           icon: const Icon(Icons.help),

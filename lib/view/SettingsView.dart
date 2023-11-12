@@ -1,42 +1,60 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sdimage_viewer/model/AppConfig.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:easy_dialogs/easy_dialogs.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
 class SettingsView extends StatefulWidget {
-  SettingsView({super.key});
+  SettingsView({super.key, this.appConfig});
+
+  AppConfig? appConfig;
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  final List<String> _positionList = [
+    "bottomLeft",
+    "bottomCenter",
+    "bottomRight",
+    "centerLeft",
+    "center",
+    "centerRight",
+    "topLeft",
+    "topCenter",
+    "topRight"
+  ];
+
+  late AppConfig _appConfig;
+
+  String? _directoryPath;
+  String? _filename;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _appConfig = widget.appConfig == null ? AppConfig() : widget.appConfig!;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var watermarkConfig = _appConfig.waterMarkConfig;
+    if (watermarkConfig.fullPath != null) {
+      var fullFilePath = _appConfig.waterMarkConfig.fullPath;
+      _directoryPath = p.dirname(fullFilePath!);
+      _filename = p.basename(fullFilePath!);
+    }
+
     return Scaffold(
         appBar: AppBar(title: const Text("Help")), body: _settingsUI(context));
   }
 
-  String? _directoryPath;
-  String? _fullFilePath;
-  String? _filename;
-
-  final List<String> _positionList = [
-    "left-top",
-    "left-bottom",
-    "right-top",
-    "right-bottom"
-  ];
-
-  int _positionIndex = 0;
-  bool _watermarkEnabled = false;
-
-  int _marginPt = 0;
-
-  void _pickImageFiles(String title) async {
+  void _pickImageFiles(String title, Function(String) onPickFile) async {
     try {
       FilePickerResult? paths = (await FilePicker.platform.pickFiles(
         type: FileType.image,
@@ -48,11 +66,7 @@ class _SettingsViewState extends State<SettingsView> {
       ));
 
       if (paths != null) {
-        setState(() {
-          _fullFilePath = paths.files.first.path;
-          _directoryPath = p.dirname(_fullFilePath!);
-          _filename = p.basename(_fullFilePath!);
-        });
+        onPickFile(paths.files.first.path!);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -77,23 +91,24 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   Widget _settingsUI(BuildContext context) {
+    var watermarkConfig = _appConfig.waterMarkConfig;
     var watermarkSettingTiles = [
       SettingsTile.switchTile(
-          initialValue: _watermarkEnabled,
+          initialValue: watermarkConfig.enable,
           onToggle: (value) {
             setState(() {
-              _watermarkEnabled = value;
+              watermarkConfig.enable = value;
             });
           },
           title: const Text('Watermark'))
     ];
 
-    if (_watermarkEnabled) {
+    if (watermarkConfig.enable) {
       watermarkSettingTiles.add(SettingsTile(
           leading: const Icon(Icons.subdirectory_arrow_right),
           title: const Text(' Position'),
           trailing: Wrap(children: [
-            Text(_positionList[_positionIndex]),
+            Text(_positionList[watermarkConfig.positionIndex].toString()),
             const Icon(Icons.navigate_next)
           ]),
           onPressed: (context) {
@@ -101,12 +116,13 @@ class _SettingsViewState extends State<SettingsView> {
                 context: context,
                 builder: (context) => SingleChoiceConfirmationDialog<String>(
                     title: const Text('Watermark Position'),
-                    initialValue: _positionList[_positionIndex],
+                    initialValue: _positionList[watermarkConfig.positionIndex],
                     items: _positionList,
                     onSubmitted: (value) {
+                      var positionIndex = _positionList.indexOf(value);
+                      if (positionIndex < 0) positionIndex = 0;
                       setState(() {
-                        _positionIndex = _positionList.indexOf(value);
-                        if (_positionIndex < 0) _positionIndex = 0;
+                        watermarkConfig.positionIndex = positionIndex;
                       });
                       debugPrint(value);
                     }));
@@ -114,13 +130,18 @@ class _SettingsViewState extends State<SettingsView> {
       watermarkSettingTiles.add(SettingsTile(
         leading: const Icon(Icons.subdirectory_arrow_right),
         title: const Text(' Margin (px)'),
-        trailing: Wrap(
-            children: [Text("$_marginPt px"), const Icon(Icons.navigate_next)]),
+        trailing: Wrap(children: [
+          Text("${watermarkConfig.marginPx} px"),
+          const Icon(Icons.navigate_next)
+        ]),
         onPressed: (context) {
           _showTextInputDialog(
-              context, "Margin(px)", "px", _marginPt.toString(), (value) {
+              context, "Margin(px)", "px", watermarkConfig.marginPx.toString(),
+              (value) {
+            var marginPt = int.parse(value);
+            if (marginPt < 0) marginPt = 0;
             setState(() {
-              _marginPt = int.parse(value);
+              watermarkConfig.marginPx = marginPt;
             });
           });
         },
@@ -132,13 +153,17 @@ class _SettingsViewState extends State<SettingsView> {
               padding: const EdgeInsets.all(4),
               child: Wrap(spacing: 8, children: [
                 Text(_filename ?? ''),
-                _fullFilePath != null
-                    ? Image.file(File(_fullFilePath!), height: 52)
+                watermarkConfig.fullPath != null
+                    ? Image.file(File(watermarkConfig.fullPath!), height: 52)
                     : const Icon(Icons.image),
                 const Icon(Icons.navigate_next)
               ])),
           onPressed: (context) {
-            _pickImageFiles("Watermark Image");
+            _pickImageFiles("Watermark Image", (pickedPath) {
+              setState(() {
+                watermarkConfig.fullPath = pickedPath;
+              });
+            });
           }));
     }
 
