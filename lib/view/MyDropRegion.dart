@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../provider/ViewStateProvider.dart';
 import '../model/ViewerState.dart';
@@ -121,18 +122,19 @@ class _MyDropRegion extends State<MyDropRegion> {
 
   @override
   Widget build(BuildContext context) {
-    var viewStateProvider =
-        Provider.of<ViewStateProvider>(context, listen: false);
-
-    return SizedBox(
-        child: DropTarget(onDragDone: (details) {
-      var files = details.files;
-      if (files.isNotEmpty) {
-        var path = files[0].path;
-        viewStateProvider.dragImagePath(path);
-      }
-    }, child: Consumer<ViewStateProvider>(builder: (context, value, child) {
-      return _bodyWidget(context, viewStateProvider);
-    })));
+    return Consumer2<ViewStateProvider, AppConfigProvider>(
+        builder: (context, viewStateProvider, appConfigProvider, child) {
+      var child = SizedBox(
+          child: DropTarget(
+              child: _bodyWidget(context, viewStateProvider),
+              onDragDone: (details) {
+                var files = details.files;
+                if (files.isNotEmpty) {
+                  var path = files[0].path;
+                  viewStateProvider.dragImagePath(path);
+                }
+              }));
+      return child;
+    });
   }
 }
