@@ -25,21 +25,31 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _handleWindowClosing() {
+    var logger = SimpleLogger();
+    logger.info('Window closing...');
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     const titleText = "Image Viewer for SD";
-    var myHomePage = const MyHomePage(title: titleText);
 
     var logger = SimpleLogger();
     logger.info("run MyApp.build");
 
-    return MaterialApp(
-      title: titleText,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: myHomePage,
-    );
+    var app = MaterialApp(
+        title: titleText,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const MyHomePage(title: titleText));
+
+    return WillPopScope(
+        child: app,
+        onWillPop: () async {
+          return _handleWindowClosing();
+        });
   }
 }
