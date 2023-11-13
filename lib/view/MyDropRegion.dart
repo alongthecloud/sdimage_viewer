@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../provider/ViewStateProvider.dart';
+import '../provider/AppConfigProvider.dart';
 import '../model/ViewerState.dart';
+import '../model/AppConfig.dart';
 import './ImagePropertyView.dart';
 import './ImageView.dart';
 
@@ -61,14 +62,14 @@ class _MyDropRegion extends State<MyDropRegion> {
   }
 
   Widget _mainWidgets(
-      BuildContext context, ViewStateProvider viewStateProvider) {
-    ViewerState viewerState = viewStateProvider.viewerState;
+      BuildContext context, ViewerState viewerState, AppConfig appConfig) {
     // left to right
     var childWidgets = [
       Expanded(
           child: Container(
               margin: const EdgeInsets.fromLTRB(1, 1, 0, 1),
-              child: ImageView(viewerState: viewerState))),
+              child:
+                  ImageView(viewerState: viewerState, appConfig: appConfig))),
       const VerticalDivider(thickness: 1, width: 5),
       ImagePropertyView(viewerState: viewerState)
     ]; // return Container(color: Colors.grey, child: childWidget);
@@ -78,8 +79,8 @@ class _MyDropRegion extends State<MyDropRegion> {
         children: childWidgets);
   }
 
-  Widget _bodyWidget(
-      BuildContext context, ViewStateProvider viewStateProvider) {
+  Widget _bodyWidget(BuildContext context, ViewStateProvider viewStateProvider,
+      AppConfigProvider appConfigProvider) {
     ViewerState viewerState = viewStateProvider.viewerState;
 
     var imageFilename = Path.basename(viewerState.curImagePath);
@@ -112,7 +113,9 @@ class _MyDropRegion extends State<MyDropRegion> {
           }
         },
         child: Column(children: [
-          Expanded(child: _mainWidgets(context, viewStateProvider)),
+          Expanded(
+              child: _mainWidgets(context, viewStateProvider.viewerState,
+                  appConfigProvider.appConfig)),
           Container(
               color: Colors.white,
               height: 42,
@@ -126,7 +129,7 @@ class _MyDropRegion extends State<MyDropRegion> {
         builder: (context, viewStateProvider, appConfigProvider, child) {
       var child = SizedBox(
           child: DropTarget(
-              child: _bodyWidget(context, viewStateProvider),
+              child: _bodyWidget(context, viewStateProvider, appConfigProvider),
               onDragDone: (details) {
                 var files = details.files;
                 if (files.isNotEmpty) {

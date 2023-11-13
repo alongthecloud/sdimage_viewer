@@ -1,17 +1,39 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:simple_logger/simple_logger.dart';
 import '../model/ViewerState.dart';
+import '../model/AppConfig.dart';
 
 class ImageView extends StatelessWidget {
-  final ViewerState viewerState;
+  final ViewerState? viewerState;
+  final AppConfig? appConfig;
 
-  const ImageView({Key? key, required this.viewerState}) : super(key: key);
+  const ImageView({Key? key, this.viewerState, this.appConfig})
+      : super(key: key);
 
-  Widget _getImageWidget(BuildContext context, ui.Image? image) {
-    if (image == null) {
+  Widget _getImageWidget(BuildContext context) {
+    ui.Image? imageData =
+        viewerState != null ? viewerState!.curImageData : null;
+    ui.Image? watermarkImageData = appConfig != null
+        ? (appConfig!.waterMarkConfig.enable ? appConfig!.waterMarkImage : null)
+        : null;
+    double watermarkMargin = appConfig != null
+        ? appConfig!.waterMarkConfig.marginPx.toDouble()
+        : 0.0;
+
+    var watermarkAlignment = appConfig != null
+        ? appConfig!.waterMarkConfig.alignment
+        : ImageAlignment.topLeft;
+
+    if (imageData == null) {
       return const SizedBox.shrink();
     } else {
-      return CustomPaint(painter: ImagePainter(image: image));
+      return CustomPaint(
+          painter: ImagePainter(
+              image: imageData,
+              watermarkImage: watermarkImageData,
+              watermarkMargin: watermarkMargin,
+              watermarkAlignment: watermarkAlignment));
     }
   }
 
@@ -20,61 +42,134 @@ class ImageView extends StatelessWidget {
     return Stack(
         alignment: AlignmentDirectional.center,
         fit: StackFit.expand,
-        children: <Widget>[_getImageWidget(context, viewerState.curImageData)]);
+        children: <Widget>[_getImageWidget(context)]);
   }
 }
 
 class ImagePainter extends CustomPainter {
   ui.Image? image;
-  ui.Image? waterMark;
+  ui.Image? watermarkImage;
 
-  Offset waterMarkOffset;
-  Alignment waterMarkAlignment;
+  double watermarkMargin;
+  ImageAlignment watermarkAlignment;
 
   ImagePainter({
     Listenable? repaint,
     this.image,
-    this.waterMark,
-    this.waterMarkOffset = Offset.zero,
-    this.waterMarkAlignment = Alignment.bottomRight,
+    this.watermarkImage,
+    this.watermarkMargin = 0.0,
+    this.watermarkAlignment = ImageAlignment.topLeft,
   }) : super(repaint: repaint);
 
-  (double, double) _scaleToFitCanvas(
-      double w1, double h1, double w2, double h2) {
-    double imageRate = w1 / h1;
-    double canvasRate = w2 / h2;
+  (double, double) _calcScaleFactor(double srcWidth, double srcHeight,
+      double targetWidth, double targetHeight) {
+    double imageRate = srcWidth / srcHeight;
+    double canvasRate = targetWidth / targetHeight;
 
-    double width, height;
+    double width;
+    double height;
 
-    if (imageRate > canvasRate) {
-      height = w2 / imageRate;
-      width = w2;
+    if (imageRate < canvasRate) {
+      height = targetHeight;
+      width = height * imageRate;
     } else {
-      width = h2 * imageRate;
-      height = h2;
+      width = targetWidth;
+      height = width / imageRate;
     }
 
-    return (width, height);
+    return (width / srcWidth, height / srcHeight);
+  }
+
+  (double, double) _calcAlignmentOffset(
+      ImageAlignment alignment,
+      double srcWidth,
+      double srcHeight,
+      double canvasWidth,
+      double canvasHeight,
+      double marginPt,
+      (double, double) scaleXY) {
+    int alignX = watermarkAlignment.value % 10;
+    int alignY = watermarkAlignment.value ~/ 10;
+
+    double offsetX = 0.0;
+    double offsetY = 0.0;
+
+    switch (alignX) {
+      case 0:
+        offsetX = (marginPt * scaleXY.$1);
+        break;
+      case 1:
+        offsetX = (canvasWidth - srcWidth) / 2.0;
+        break;
+      case 2:
+        offsetX = (canvasWidth - srcWidth) - (marginPt * scaleXY.$1);
+        break;
+    }
+
+    switch (alignY) {
+      case 0:
+        offsetY = (marginPt * scaleXY.$2);
+        break;
+      case 1:
+        offsetY = (canvasHeight - srcHeight) / 2.0;
+        break;
+      case 2:
+        offsetY = (canvasHeight - srcHeight) - (marginPt * scaleXY.$2);
+        break;
+    }
+
+    return (offsetX, offsetY);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    var logger = SimpleLogger();
+    // logger.info("ImageView::Paint");
+
     if (image != null) {
       var imagePaint = Paint()..filterQuality = FilterQuality.high;
+      var imgWidth = image!.width.toDouble();
+      var imgHeight = image!.height.toDouble();
+      var scaleF =
+          _calcScaleFactor(imgWidth, imgHeight, size.width, size.height);
 
-      var imageRect = Rect.fromLTWH(
-          0, 0, image!.width.toDouble(), image!.height.toDouble());
+      double imgDstWidth = imgWidth * scaleF.$1;
+      double imgDstHeight = imgHeight * scaleF.$2;
 
-      var rescaleSize = _scaleToFitCanvas(
-          imageRect.width, imageRect.height, size.width, size.height);
+      double offsetX = (size.width - imgDstWidth) / 2.0;
+      double offsetY = (size.height - imgDstHeight) / 2.0;
 
-      var offsetX = (size.width - rescaleSize.$1) / 2;
-      var offsetY = (size.height - rescaleSize.$2) / 2;
+      canvas.drawImageRect(
+          image!,
+          Rect.fromLTWH(0, 0, imgWidth, imgHeight),
+          Rect.fromLTWH(offsetX, offsetY, imgDstWidth, imgDstHeight),
+          imagePaint);
 
-      var targetRect =
-          Rect.fromLTWH(offsetX, offsetY, rescaleSize.$1, rescaleSize.$2);
+      if (watermarkImage != null) {
+        var watermarkPaint = Paint()
+          ..filterQuality = FilterQuality.high
+          ..blendMode = BlendMode.srcOver;
 
-      canvas.drawImageRect(image!, imageRect, targetRect, imagePaint);
+        var wimgWidth = watermarkImage!.width.toDouble();
+        var wimgHeight = watermarkImage!.height.toDouble();
+        double wimgDstWidth = wimgWidth * scaleF.$1;
+        double wimgDstHeight = wimgHeight * scaleF.$2;
+
+        var offset2 = _calcAlignmentOffset(watermarkAlignment, wimgDstWidth,
+            wimgDstHeight, imgDstWidth, imgDstHeight, watermarkMargin, scaleF);
+
+        double wX = offsetX + offset2.$1;
+        double wY = offsetY + offset2.$2;
+
+        canvas.drawImageRect(
+            watermarkImage!,
+            Rect.fromLTWH(0, 0, wimgWidth, wimgHeight),
+            Rect.fromLTWH(wX, wY, wimgDstWidth, wimgDstHeight),
+            watermarkPaint);
+
+        // logger.info(
+        //     "DrawImage $wimgWidth, $wimgHeight - ($wX,$wY - $wimgDstWidth,$wimgDstHeight)");
+      }
     }
   }
 
