@@ -17,18 +17,6 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  final List<String> _positionList = [
-    "bottomLeft",
-    "bottomCenter",
-    "bottomRight",
-    "centerLeft",
-    "center",
-    "centerRight",
-    "topLeft",
-    "topCenter",
-    "topRight"
-  ];
-
   late AppConfig _appConfig;
 
   String? _directoryPath;
@@ -108,24 +96,28 @@ class _SettingsViewState extends State<SettingsView> {
           leading: const Icon(Icons.subdirectory_arrow_right),
           title: const Text(' Position'),
           trailing: Wrap(children: [
-            Text(_positionList[watermarkConfig.positionIndex].toString()),
+            Text(watermarkConfig.alignment.name),
             const Icon(Icons.navigate_next)
           ]),
           onPressed: (context) {
             showDialog(
                 context: context,
-                builder: (context) => SingleChoiceConfirmationDialog<String>(
-                    title: const Text('Watermark Position'),
-                    initialValue: _positionList[watermarkConfig.positionIndex],
-                    items: _positionList,
-                    onSubmitted: (value) {
-                      var positionIndex = _positionList.indexOf(value);
-                      if (positionIndex < 0) positionIndex = 0;
-                      setState(() {
-                        watermarkConfig.positionIndex = positionIndex;
-                      });
-                      debugPrint(value);
-                    }));
+                builder: (context) =>
+                    SingleChoiceConfirmationDialog<ImageAlignment>(
+                      title: const Text('Watermark Position'),
+                      initialValue: watermarkConfig.alignment,
+                      items: ImageAlignment.values,
+                      onSubmitted: (value) {
+                        var selectedAlignment = value;
+                        setState(() {
+                          watermarkConfig.alignment = selectedAlignment;
+                        });
+                        debugPrint(selectedAlignment.toString());
+                      },
+                      itemBuilder: (item) {
+                        return Text(item.name);
+                      },
+                    ));
           }));
       watermarkSettingTiles.add(SettingsTile(
         leading: const Icon(Icons.subdirectory_arrow_right),
