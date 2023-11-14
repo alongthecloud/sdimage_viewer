@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_logger/simple_logger.dart';
 import '../model/ViewerState.dart';
 import '../model/AppConfig.dart';
+import '../util/ImageUtil.dart';
 
 class ImageView extends StatelessWidget {
   final ViewerState? viewerState;
@@ -61,8 +62,8 @@ class ImagePainter extends CustomPainter {
     this.watermarkAlignment = ImageAlignment.topLeft,
   }) : super(repaint: repaint);
 
-  (double, double) _calcScaleFactor(double srcWidth, double srcHeight,
-      double targetWidth, double targetHeight) {
+  Offset _calcScaleFactor(double srcWidth, double srcHeight, double targetWidth,
+      double targetHeight) {
     double imageRate = srcWidth / srcHeight;
     double canvasRate = targetWidth / targetHeight;
 
@@ -77,48 +78,7 @@ class ImagePainter extends CustomPainter {
       height = width / imageRate;
     }
 
-    return (width / srcWidth, height / srcHeight);
-  }
-
-  (double, double) _calcAlignmentOffset(
-      ImageAlignment alignment,
-      double srcWidth,
-      double srcHeight,
-      double canvasWidth,
-      double canvasHeight,
-      double marginPt,
-      (double, double) scaleXY) {
-    int alignX = watermarkAlignment.value % 10;
-    int alignY = watermarkAlignment.value ~/ 10;
-
-    double offsetX = 0.0;
-    double offsetY = 0.0;
-
-    switch (alignX) {
-      case 0:
-        offsetX = (marginPt * scaleXY.$1);
-        break;
-      case 1:
-        offsetX = (canvasWidth - srcWidth) / 2.0;
-        break;
-      case 2:
-        offsetX = (canvasWidth - srcWidth) - (marginPt * scaleXY.$1);
-        break;
-    }
-
-    switch (alignY) {
-      case 0:
-        offsetY = (marginPt * scaleXY.$2);
-        break;
-      case 1:
-        offsetY = (canvasHeight - srcHeight) / 2.0;
-        break;
-      case 2:
-        offsetY = (canvasHeight - srcHeight) - (marginPt * scaleXY.$2);
-        break;
-    }
-
-    return (offsetX, offsetY);
+    return Offset(width / srcWidth, height / srcHeight);
   }
 
   @override
@@ -133,8 +93,8 @@ class ImagePainter extends CustomPainter {
       var scaleF =
           _calcScaleFactor(imgWidth, imgHeight, size.width, size.height);
 
-      double imgDstWidth = imgWidth * scaleF.$1;
-      double imgDstHeight = imgHeight * scaleF.$2;
+      double imgDstWidth = imgWidth * scaleF.dx;
+      double imgDstHeight = imgHeight * scaleF.dy;
 
       double offsetX = (size.width - imgDstWidth) / 2.0;
       double offsetY = (size.height - imgDstHeight) / 2.0;
@@ -150,25 +110,27 @@ class ImagePainter extends CustomPainter {
           ..filterQuality = FilterQuality.high
           ..blendMode = BlendMode.srcOver;
 
-        var wimgWidth = watermarkImage!.width.toDouble();
-        var wimgHeight = watermarkImage!.height.toDouble();
-        double wimgDstWidth = wimgWidth * scaleF.$1;
-        double wimgDstHeight = wimgHeight * scaleF.$2;
+        Size wImgSize = Size(watermarkImage!.width.toDouble(),
+            watermarkImage!.height.toDouble());
+        Size wScaledSize =
+            Size(wImgSize.width * scaleF.dx, wImgSize.height * scaleF.dy);
 
-        var offset2 = _calcAlignmentOffset(watermarkAlignment, wimgDstWidth,
-            wimgDstHeight, imgDstWidth, imgDstHeight, watermarkMargin, scaleF);
+        Offset scaledMargin =
+            Offset(watermarkMargin * scaleF.dx, watermarkMargin * scaleF.dy);
 
-        double wX = offsetX + offset2.$1;
-        double wY = offsetY + offset2.$2;
+        var offset2 = ImageUtil.calcAlignmentOffset(watermarkAlignment,
+            wScaledSize, Size(imgDstWidth, imgDstHeight), scaledMargin);
+
+        double wX = offsetX + offset2.dx;
+        double wY = offsetY + offset2.dy;
 
         canvas.drawImageRect(
             watermarkImage!,
-            Rect.fromLTWH(0, 0, wimgWidth, wimgHeight),
-            Rect.fromLTWH(wX, wY, wimgDstWidth, wimgDstHeight),
+            Rect.fromLTWH(0, 0, wImgSize.width, wImgSize.height),
+            Rect.fromLTWH(wX, wY, wScaledSize.width, wScaledSize.height),
             watermarkPaint);
 
-        // logger.info(
-        //     "DrawImage $wimgWidth, $wimgHeight - ($wX,$wY - $wimgDstWidth,$wimgDstHeight)");
+        logger.info("DrawImage offset($wX,$wY)");
       }
     }
   }

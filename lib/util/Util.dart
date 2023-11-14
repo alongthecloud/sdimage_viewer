@@ -23,13 +23,20 @@ class Util {
     return formatter.format(date);
   }
 
+  static void showToastMessage(
+      BuildContext context, String message, Duration duration) {
+    var notificationWidget = Text(message,
+        style: Theme.of(context)
+            .textTheme
+            .displaySmall
+            ?.merge(TextStyle(backgroundColor: Colors.grey.withOpacity(0.5))));
+
+    showToastWidget(notificationWidget, duration: duration);
+  }
+
   static void copy2clipboard(BuildContext context, key, value) {
     FlutterClipboard.copy(value).then((value) {
-      var notificationWidget = Text("$key copied!",
-          style: Theme.of(context).textTheme.displaySmall?.merge(
-              TextStyle(backgroundColor: Colors.grey.withOpacity(0.5))));
-
-      showToastWidget(notificationWidget, duration: const Duration(seconds: 1));
+      showToastMessage(context, "$key copied!", const Duration(seconds: 1));
 
       var logger = SimpleLogger();
       logger.info("$key copied!");
@@ -49,14 +56,9 @@ class Util {
     return json;
   }
 
-  // Json을 쓰기
+  // Json 파일 쓰기
   static Future<bool> saveJsonTextToFile(dynamic json, String filepath,
       {bool overwrite = true, bool pretty = false}) async {
-    var fp = File(filepath);
-    if (fp.existsSync() && overwrite == false) {
-      return false;
-    }
-
     String jsonText;
     if (kDebugMode || pretty) {
       JsonEncoder encoder = const JsonEncoder.withIndent('  ');
@@ -65,7 +67,18 @@ class Util {
       jsonText = jsonEncode(json);
     }
 
-    await fp.writeAsString(jsonText);
+    return saveTextFile(jsonText, filepath, overwrite: overwrite);
+  }
+
+  // text 파일 쓰기
+  static Future<bool> saveTextFile(String text, String filepath,
+      {bool overwrite = true}) async {
+    var fp = File(filepath);
+    if (fp.existsSync() && overwrite == false) {
+      return false;
+    }
+
+    await fp.writeAsString(text);
 
     var logger = SimpleLogger();
     logger.info("${fp.path} saved");
