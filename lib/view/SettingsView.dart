@@ -6,6 +6,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:easy_dialogs/easy_dialogs.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
+import '../util/ImageUtil.dart';
 
 class SettingsView extends StatefulWidget {
   SettingsView({super.key, this.appConfig});

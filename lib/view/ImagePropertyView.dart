@@ -1,14 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:expandable_text/expandable_text.dart';
 import '../model/ViewerState.dart';
-import '../model/AppConfig.dart';
 import './HelpView.dart';
 import './SettingsView.dart';
 import '../util/WidgetUtil.dart';
 import '../util/Util.dart';
+import '../util/ImageUtil.dart';
 import '../util/MetaKeyword.dart';
 
 class ImagePropertyView extends StatelessWidget {
@@ -72,8 +74,36 @@ class ImagePropertyView extends StatelessWidget {
     var metaTable = viewerState.curImageMetaData.getMetaTable();
     var appConfigProvider =
         Provider.of<AppConfigProvider>(context, listen: false);
+    var appConfig = appConfigProvider.appConfig;
 
     Widget rightButtonBar = ButtonBar(children: [
+      IconButton(
+          icon: const Icon(Icons.save),
+          onPressed: () {
+            var currentImage = viewerState.curImageData;
+            Offset offset = Offset.zero;
+            if (appConfig.waterMarkImage != null && currentImage != null) {
+              var wmImage = appConfig.waterMarkImage!;
+              var marginPt = appConfig.waterMarkConfig.marginPx.toDouble();
+              offset = ImageUtil.calcAlignmentOffset(
+                  appConfig.waterMarkConfig.alignment,
+                  Size(wmImage.width.toDouble(), wmImage.height.toDouble()),
+                  Size(currentImage.width.toDouble(),
+                      currentImage.height.toDouble()),
+                  Offset(marginPt, marginPt));
+            }
+
+            ImageUtil.saveImageWithWaterMark(viewerState.curImagePath,
+                    viewerState.curImageData, appConfig.waterMarkImage, offset)
+                .then((value) {
+              if (value != null) {
+                var metaText = metaTable.toString();
+                Util.showToastMessage(
+                    context, "Image saved !", const Duration(seconds: 1));
+                Util.saveTextFile(metaText, "$value.meta.txt");
+              }
+            });
+          }),
       IconButton(
           icon: const Icon(Icons.settings),
           onPressed: () {
