@@ -35,6 +35,12 @@ class MetaData {
     }
   }
 
+  String? toJson() {
+    // _metaTable to json
+    String jsonText = jsonEncode(_metaTable);
+    return jsonText;
+  }
+
   String toString() {
     final metaTable = _metaTable;
     StringBuffer sb = StringBuffer();

@@ -4,6 +4,7 @@ import 'package:simple_logger/simple_logger.dart';
 import '../model/ViewerState.dart';
 import '../model/AppConfig.dart';
 import '../util/ImageUtil.dart';
+import '../ImageAlignment.dart';
 
 class ImageView extends StatelessWidget {
   final ViewerState? viewerState;
@@ -13,18 +14,22 @@ class ImageView extends StatelessWidget {
       : super(key: key);
 
   Widget _getImageWidget(BuildContext context) {
+    var appUserData = appConfig!.appUserData;
+    var watermarkconfig = appConfig!.watermark;
+
     ui.Image? imageData =
         viewerState != null ? viewerState!.curImageData : null;
-    ui.Image? watermarkImageData = appConfig != null
-        ? (appConfig!.waterMarkConfig.enable ? appConfig!.waterMarkImage : null)
-        : null;
-    double watermarkMargin = appConfig != null
-        ? appConfig!.waterMarkConfig.marginPx.toDouble()
-        : 0.0;
 
-    var watermarkAlignment = appConfig != null
-        ? appConfig!.waterMarkConfig.alignment
-        : ImageAlignment.topLeft;
+    ui.Image? watermarkImageData;
+    double watermarkMargin = 2.0;
+    var watermarkAlignment = ImageAlignment.bottomRight;
+    if (appConfig != null &&
+        watermarkconfig != null &&
+        watermarkconfig.enable) {
+      watermarkImageData = appUserData.waterMarkImage;
+      watermarkMargin = watermarkconfig.margin.toDouble();
+      watermarkAlignment = watermarkconfig.alignment;
+    }
 
     if (imageData == null) {
       return const SizedBox.shrink();
@@ -84,7 +89,7 @@ class ImagePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var logger = SimpleLogger();
-    // logger.info("ImageView::Paint");
+    logger.info("ImageView::Paint");
 
     if (image != null) {
       var imagePaint = Paint()..filterQuality = FilterQuality.high;
@@ -129,14 +134,17 @@ class ImagePainter extends CustomPainter {
             Rect.fromLTWH(0, 0, wImgSize.width, wImgSize.height),
             Rect.fromLTWH(wX, wY, wScaledSize.width, wScaledSize.height),
             watermarkPaint);
-
-        logger.info("DrawImage offset($wX,$wY)");
       }
     }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+
+  @override
+  bool shouldRebuildSemantics(CustomPainter oldDelegate) {
     return false;
   }
 }

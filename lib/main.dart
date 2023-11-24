@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:window_manager/window_manager.dart';
+import './provider/AppConfigProvider.dart';
 import 'MyHomePage.dart';
 
 void main() async {
@@ -25,12 +27,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _handleWindowClosing() {
-    var logger = SimpleLogger();
-    logger.info('Window closing...');
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     const titleText = "Image Viewer for SD";
@@ -38,18 +34,21 @@ class _MyAppState extends State<MyApp> {
     var logger = SimpleLogger();
     logger.info("run MyApp.build");
 
-    var app = MaterialApp(
-        title: titleText,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(title: titleText));
+    return ChangeNotifierProvider(create: (context) {
+      var appConfigProvider = AppConfigProvider();
+      appConfigProvider.init();
+      return appConfigProvider;
+    }, builder: (context, child) {
+      var app = MaterialApp(
+          title: titleText,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home: const MyHomePage(title: titleText));
 
-    return WillPopScope(
-        child: app,
-        onWillPop: () async {
-          return _handleWindowClosing();
-        });
+      // return app;
+      return app;
+    });
   }
 }

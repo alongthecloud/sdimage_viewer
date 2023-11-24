@@ -6,12 +6,12 @@ import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:expandable_text/expandable_text.dart';
 import '../model/ViewerState.dart';
-import './HelpView.dart';
-import './SettingsView.dart';
 import '../util/WidgetUtil.dart';
 import '../util/Util.dart';
 import '../util/ImageUtil.dart';
 import '../util/MetaKeyword.dart';
+import './HelpView.dart';
+import './SettingsView.dart';
 
 class ImagePropertyView extends StatelessWidget {
   final ViewerState viewerState;
@@ -75,26 +75,36 @@ class ImagePropertyView extends StatelessWidget {
     var appConfigProvider =
         Provider.of<AppConfigProvider>(context, listen: false);
     var appConfig = appConfigProvider.appConfig;
+    var appUserData = appConfig.appUserData;
 
     Widget rightButtonBar = ButtonBar(children: [
       IconButton(
           icon: const Icon(Icons.save),
           onPressed: () {
+            assert(appConfig.watermark != null);
+
             var currentImage = viewerState.curImageData;
             Offset offset = Offset.zero;
-            if (appConfig.waterMarkImage != null && currentImage != null) {
-              var wmImage = appConfig.waterMarkImage!;
-              var marginPt = appConfig.waterMarkConfig.marginPx.toDouble();
-              offset = ImageUtil.calcAlignmentOffset(
-                  appConfig.waterMarkConfig.alignment,
-                  Size(wmImage.width.toDouble(), wmImage.height.toDouble()),
-                  Size(currentImage.width.toDouble(),
-                      currentImage.height.toDouble()),
-                  Offset(marginPt, marginPt));
+            if (appUserData.waterMarkImage != null && currentImage != null) {
+              var watermarkconfig = appConfig.watermark;
+              if (watermarkconfig != null) {
+                var wmImage = appUserData.waterMarkImage!;
+                var margin = appConfig.watermark!.margin.toDouble();
+
+                offset = ImageUtil.calcAlignmentOffset(
+                    appConfig.watermark!.alignment,
+                    Size(wmImage.width.toDouble(), wmImage.height.toDouble()),
+                    Size(currentImage.width.toDouble(),
+                        currentImage.height.toDouble()),
+                    Offset(margin, margin));
+              }
             }
 
-            ImageUtil.saveImageWithWaterMark(viewerState.curImagePath,
-                    viewerState.curImageData, appConfig.waterMarkImage, offset)
+            ImageUtil.saveImageWithWaterMark(
+                    viewerState.curImagePath,
+                    viewerState.curImageData,
+                    appUserData.waterMarkImage,
+                    offset)
                 .then((value) {
               if (value != null) {
                 var metaText = metaTable.toString();
@@ -110,6 +120,7 @@ class ImagePropertyView extends StatelessWidget {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return SettingsView(appConfig: appConfigProvider.appConfig);
             })).then((value) {
+              appConfigProvider.save();
               appConfigProvider.update();
               return null;
             });
