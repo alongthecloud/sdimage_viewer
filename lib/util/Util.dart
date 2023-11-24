@@ -45,15 +45,10 @@ class Util {
 
   // Json 을 읽기
   static Object? loadJsonFromFile(String filepath) {
-    var fp = File(filepath);
-    if (!fp.existsSync()) {
-      return null;
-    }
+    String? text = loadTextFile(filepath);
+    if (text == null) return null;
 
-    String text = fp.readAsStringSync();
-    dynamic json = jsonDecode(text);
-
-    return json;
+    return jsonDecode(text);
   }
 
   // Json 파일 쓰기
@@ -68,6 +63,17 @@ class Util {
     }
 
     return saveTextFile(jsonText, filepath, overwrite: overwrite);
+  }
+
+  // load text file
+  static String? loadTextFile(String filepath) {
+    var fp = File(filepath);
+    if (!fp.existsSync()) {
+      return null;
+    }
+
+    String text = fp.readAsStringSync();
+    return text;
   }
 
   // text 파일 쓰기

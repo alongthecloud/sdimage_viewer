@@ -4,7 +4,6 @@ import 'package:simple_logger/simple_logger.dart';
 import 'package:oktoast/oktoast.dart';
 import './view/MyDropRegion.dart';
 import './provider/ViewStateProvider.dart';
-import './provider/AppConfigProvider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -21,16 +20,13 @@ class _MyHomePageState extends State<MyHomePage> {
     var logger = SimpleLogger();
     logger.info("run MyHomePage.build");
 
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<AppConfigProvider>(
-              create: (context) => AppConfigProvider()),
-          ChangeNotifierProvider<ViewStateProvider>(
-              create: (context) => ViewStateProvider()),
-        ],
-        child: Scaffold(
-            body: OKToast(
-                child: Container(
-                    color: Colors.grey, child: const MyDropRegion()))));
+    return ChangeNotifierProvider(
+        create: (context) => ViewStateProvider(),
+        builder: (context, child) {
+          return Scaffold(
+              body: OKToast(
+                  child: Container(
+                      color: Colors.grey, child: const MyDropRegion())));
+        });
   }
 }

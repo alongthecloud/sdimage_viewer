@@ -1,7 +1,20 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 class PathUtil {
+  static Future<String> getAppDirPath(String appDirName) async {
+    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
+    return path.join(appDocumentsDir.path, appDirName);
+  }
+
+  static Future<void> makeDir(String dirname) async {
+    var dir = Directory(dirname);
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+  }
+
   static bool _isHiddenName(String name) {
     if (name.startsWith(".")) {
       return true;
