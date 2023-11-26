@@ -40,13 +40,17 @@ class ImagePropertyView extends StatelessWidget {
   }
 
   static TableRow _tableRow(BuildContext context, String key, String value) {
+    var copyEnableKeywords = [MetaKeyword.Prompt, MetaKeyword.Negative_prompt];
+
     Widget keyWidget;
     Widget valueWidget;
-    if (key == MetaKeyword.Prompt || key == MetaKeyword.Negative_prompt) {
-      keyWidget =
-          WidgetUtil.iconButton(WidgetUtil.ContentCopyIcon, Text(key), () {
-        Util.copy2clipboard(context, key, value);
-      });
+
+    if (copyEnableKeywords.contains(key)) {
+      keyWidget = InkWell(
+          child: Wrap(children: [WidgetUtil.ContentCopyIcon, Text(key)]),
+          onTap: () {
+            Util.copy2clipboard(context, key, value);
+          });
 
       valueWidget = ExpandableText(value,
           expandOnTextTap: true,
@@ -144,11 +148,13 @@ class ImagePropertyView extends StatelessWidget {
     }
 
     if (metaTable.isNotEmpty) {
-      sideItems.add(WidgetUtil.iconButton(
-          WidgetUtil.ContentCopyIcon, const Text("Meta-data"), () {
-        var value = metaTable.toString();
-        Util.copy2clipboard(context, "Meta-data", value);
-      }));
+      sideItems.add(InkWell(
+          child: Wrap(
+              children: [WidgetUtil.ContentCopyIcon, const Text("Meta-data")]),
+          onTap: () {
+            var value = metaTable.toString();
+            Util.copy2clipboard(context, "Meta-data", value);
+          }));
 
       var metaTableWidget = Container(
           margin: const EdgeInsets.all(4),

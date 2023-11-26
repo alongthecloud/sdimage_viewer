@@ -15,9 +15,9 @@ class AppConfigProvider extends ChangeNotifier {
   final ImageManager _imageManager = ImageManager();
   late AppConfig appConfig;
 
-  late String appDirPath;
-  late String outputDirPath;
-  late String appConfigFilePath;
+  static late String appDirPath;
+  static late String outputDirPath;
+  static late String appConfigFilePath;
 
   AppConfigProvider() {
     // set up default values
