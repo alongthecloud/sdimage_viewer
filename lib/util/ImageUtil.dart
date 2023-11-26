@@ -42,8 +42,12 @@ class ImageUtil {
     return Offset(offsetX, offsetY);
   }
 
-  static Future<String?> saveImageWithWaterMark(String baseFullPath,
-      ui.Image? baseImage, ui.Image? watermarkImage, Offset margin) async {
+  static Future<String?> saveImageWithWaterMark(
+      String baseFullPath,
+      ui.Image? baseImage,
+      ui.Image? watermarkImage,
+      Offset margin,
+      String? prefixName) async {
     img.Image? imageA = await _convertImage(baseImage);
     if (imageA == null) return null;
 
@@ -67,10 +71,11 @@ class ImageUtil {
       await dir.create(recursive: true);
     }
 
-    var baseName = p.basename(baseFullPath);
+    var baseName = p.basenameWithoutExtension(baseFullPath);
 
     const extension = "jpg";
-    final targetPath = p.join(targetDir, "[sd.viewer]$baseName.$extension");
+    String prefix = prefixName ?? "";
+    final targetPath = p.join(targetDir, "${prefix}$baseName.$extension");
 
     img.encodeJpgFile(targetPath, finalImage);
     return targetPath;

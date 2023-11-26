@@ -6,13 +6,29 @@ class AppConfig implements Serializable {
   AppUserData appUserData = AppUserData();
 
   String version;
+  GeneralConfig? general;
   WaterMarkConfig? watermark;
 
-  AppConfig({this.version = "1.0", this.watermark});
+  AppConfig({this.version = "1.0", this.general, this.watermark});
 
   @override
   Map<String, dynamic> toMap() {
-    return {'version': version, 'watermark': watermark};
+    return {'version': version, 'general': general, 'watermark': watermark};
+  }
+}
+
+class GeneralConfig implements Serializable {
+  bool savewithmetatext;
+  String savefileprefix;
+
+  GeneralConfig({this.savewithmetatext = false, this.savefileprefix = ''});
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'savewithmetatext': savewithmetatext,
+      'savefileprefix': savefileprefix
+    };
   }
 }
 

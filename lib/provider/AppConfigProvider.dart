@@ -21,13 +21,14 @@ class AppConfigProvider extends ChangeNotifier {
 
   AppConfigProvider() {
     // set up default values
-    appConfig = AppConfig(version: "1.0", watermark: WaterMarkConfig());
+    appConfig = AppConfig(version: "1.0");
   }
 
   void init() async {
     JsonSerializer.options = JsonSerializerOptions(types: [
       UserType<AppConfig>(AppConfig.new),
       UserType<WaterMarkConfig>(WaterMarkConfig.new),
+      UserType<GeneralConfig>(GeneralConfig.new),
       EnumType<ImageAlignment>(ImageAlignment.values),
     ]);
 
@@ -49,6 +50,10 @@ class AppConfigProvider extends ChangeNotifier {
       logger.warning(e.toString());
     }
 
+    appConfig.watermark ??= WaterMarkConfig();
+    appConfig.general ??= GeneralConfig();
+
+    save();
     update();
   }
 
