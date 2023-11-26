@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 class PathUtil {
   static Future<void> makeDir(String dirname) async {
