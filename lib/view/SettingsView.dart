@@ -40,8 +40,17 @@ class _SettingsViewState extends State<SettingsView> {
       _filename = p.basename(fullFilePath);
     }
 
+    List<SettingsSection> sections = [];
+    if (_appConfig.general != null) {
+      sections.add(_generalSettings(context, _appConfig.general!));
+    }
+    if (_appConfig.watermark != null) {
+      sections.add(_watermarkSettings(context, _appConfig.watermark!));
+    }
+
     return Scaffold(
-        appBar: AppBar(title: const Text("Help")), body: _settingsUI(context));
+        appBar: AppBar(title: const Text("Settings")),
+        body: SettingsList(sections: sections));
   }
 
   void _pickImageFiles(String title, Function(String) onPickFile) async {
@@ -80,27 +89,59 @@ class _SettingsViewState extends State<SettingsView> {
         });
   }
 
-  Widget _settingsUI(BuildContext context) {
-    var watermarkconfig = _appConfig.watermark;
-    if (watermarkconfig != null) const SizedBox.shrink();
-
-    var watermarkSettingTiles = [
+  SettingsSection _generalSettings(BuildContext context, GeneralConfig config) {
+    var settingsTiles = [
       SettingsTile.switchTile(
-          initialValue: watermarkconfig!.enable,
+          initialValue: config.savewithmetatext,
           onToggle: (value) {
             setState(() {
-              watermarkconfig.enable = value;
+              config.savewithmetatext = value;
+            });
+          },
+          title: const Text('Save with meta text file')),
+      SettingsTile(
+        trailing: Wrap(children: [
+          Text("${config.savefileprefix}"),
+          const Icon(Icons.navigate_next)
+        ]),
+        title: const Text("Save file prefix"),
+        onPressed: (value) {
+          _showTextInputDialog(
+              context, "Save file prefix", "prefix", config.savefileprefix,
+              (value) {
+            setState(() {
+              config.savefileprefix = value;
+            });
+          });
+        },
+      )
+    ];
+
+    return SettingsSection(
+      title: const Text("General"),
+      tiles: settingsTiles,
+    );
+  }
+
+  SettingsSection _watermarkSettings(
+      BuildContext context, WaterMarkConfig config) {
+    var watermarkSettingTiles = [
+      SettingsTile.switchTile(
+          initialValue: config.enable,
+          onToggle: (value) {
+            setState(() {
+              config.enable = value;
             });
           },
           title: const Text('Watermark'))
     ];
 
-    if (watermarkconfig.enable) {
+    if (config.enable) {
       watermarkSettingTiles.add(SettingsTile(
           leading: const Icon(Icons.subdirectory_arrow_right),
           title: const Text(' Position'),
           trailing: Wrap(children: [
-            Text(watermarkconfig.alignment.name),
+            Text(config.alignment.name),
             const Icon(Icons.navigate_next)
           ]),
           onPressed: (context) {
@@ -109,12 +150,12 @@ class _SettingsViewState extends State<SettingsView> {
                 builder: (context) =>
                     SingleChoiceConfirmationDialog<ImageAlignment>(
                       title: const Text('Watermark Position'),
-                      initialValue: watermarkconfig.alignment,
+                      initialValue: config.alignment,
                       items: ImageAlignment.values,
                       onSubmitted: (value) {
                         var selectedAlignment = value;
                         setState(() {
-                          watermarkconfig.alignment = selectedAlignment;
+                          config.alignment = selectedAlignment;
                         });
                         debugPrint(selectedAlignment.toString());
                       },
@@ -127,17 +168,16 @@ class _SettingsViewState extends State<SettingsView> {
         leading: const Icon(Icons.subdirectory_arrow_right),
         title: const Text(' Margin (px)'),
         trailing: Wrap(children: [
-          Text("${watermarkconfig.margin} px"),
+          Text("${config.margin} px"),
           const Icon(Icons.navigate_next)
         ]),
         onPressed: (context) {
           _showTextInputDialog(
-              context, "Margin(px)", "px", watermarkconfig.margin.toString(),
-              (value) {
+              context, "Margin(px)", "px", config.margin.toString(), (value) {
             var marginPt = int.parse(value);
             if (marginPt < 0) marginPt = 0;
             setState(() {
-              watermarkconfig.margin = marginPt;
+              config.margin = marginPt;
             });
           });
         },
@@ -149,26 +189,23 @@ class _SettingsViewState extends State<SettingsView> {
               padding: const EdgeInsets.all(4),
               child: Wrap(spacing: 8, children: [
                 Text(_filename ?? ''),
-                watermarkconfig.imagePath.isNotEmpty
-                    ? Image.file(File(watermarkconfig.imagePath), height: 52)
+                config.imagePath.isNotEmpty
+                    ? Image.file(File(config.imagePath), height: 52)
                     : const Icon(Icons.image),
                 const Icon(Icons.navigate_next)
               ])),
           onPressed: (context) {
             _pickImageFiles("Watermark Image", (pickedPath) {
               setState(() {
-                watermarkconfig.imagePath = pickedPath;
+                config.imagePath = pickedPath;
               });
             });
           }));
     }
 
-    return SettingsList(
-      sections: [
-        SettingsSection(
-          tiles: watermarkSettingTiles,
-        ),
-      ],
+    return SettingsSection(
+      title: const Text("Watermark"),
+      tiles: watermarkSettingTiles,
     );
   }
 }

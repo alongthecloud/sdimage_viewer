@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
@@ -104,17 +104,29 @@ class ImagePropertyView extends StatelessWidget {
               }
             }
 
+            String? prefix;
+            if (appConfig.general != null) {
+              prefix = appConfig.general!.savefileprefix;
+            } else {
+              prefix = null;
+            }
+
             ImageUtil.saveImageWithWaterMark(
                     viewerState.curImagePath,
                     viewerState.curImageData,
                     appUserData.waterMarkImage,
-                    offset)
+                    offset,
+                    prefix)
                 .then((value) {
               if (value != null) {
                 var metaText = metaTable.toString();
                 Util.showToastMessage(
                     context, "Image saved !", const Duration(seconds: 1));
-                Util.saveTextFile(metaText, "$value.meta.txt");
+                if (appConfig.general != null &&
+                    appConfig.general!.savewithmetatext) {
+                  var metaFileName = "${path.withoutExtension(value)}.meta.txt";
+                  Util.saveTextFile(metaText, metaFileName);
+                }
               }
             });
           }),
