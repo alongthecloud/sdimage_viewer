@@ -4,8 +4,6 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import '../ConstValues.dart';
 import '../ImageAlignment.dart';
 
 class ImageUtil {
@@ -42,12 +40,11 @@ class ImageUtil {
     return Offset(offsetX, offsetY);
   }
 
-  static Future<String?> saveImageWithWaterMark(
-      String baseFullPath,
-      ui.Image? baseImage,
-      ui.Image? watermarkImage,
-      Offset margin,
-      String? prefixName) async {
+  static Future<img.Image?> compositeImageWithWaterMark(
+    ui.Image? baseImage,
+    ui.Image? watermarkImage,
+    Offset offset,
+  ) async {
     img.Image? imageA = await _convertImage(baseImage);
     if (imageA == null) return null;
 
@@ -58,26 +55,29 @@ class ImageUtil {
       finalImage = imageA;
     } else {
       finalImage = await _mergeImage(
-          imageA, imageB, margin.dx.toInt(), margin.dy.toInt());
+          imageA, imageB, offset.dx.toInt(), offset.dy.toInt());
     }
+    return finalImage;
+  }
 
-    // targetDirectory is sd-outputs directory above the Documents directory
-    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    var targetDir = p.join(appDocumentsDir.path, ConstValues.AppDirName,
-        ConstValues.OutputDirName);
+  static Future<bool> saveImageWithWatermark(String targetPath,
+      ui.Image? baseImage, ui.Image? watermarkImage, Offset offset) async {
+    img.Image? finalImage =
+        await compositeImageWithWaterMark(baseImage, watermarkImage, offset);
+    if (finalImage == null) return false;
 
-    var dir = Directory(targetDir);
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
+    img.encodeJpgFile(targetPath, finalImage, quality: 95);
+    return true;
+  }
 
+  static String getImageFullPath(
+      String outputDir, String baseFullPath, String prefixName) {
     var baseName = p.basenameWithoutExtension(baseFullPath);
-
     const extension = "jpg";
-    String prefix = prefixName ?? "";
-    final targetPath = p.join(targetDir, "${prefix}$baseName.$extension");
 
-    img.encodeJpgFile(targetPath, finalImage);
+    String targetDir = outputDir;
+    final targetPath = p.join(targetDir, "$prefixName$baseName.$extension");
+
     return targetPath;
   }
 
