@@ -1,23 +1,14 @@
-import 'dart:io';
-import 'package:path/path.dart' as path;
 import 'package:flutter/widgets.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:json_serializer/json_serializer.dart';
 import '../model/AppConfig.dart';
 import '../model/ImageManager.dart';
-import '../util/PathUtil.dart';
 import '../util/Util.dart';
-import '../ConstValues.dart';
 import '../ImageAlignment.dart';
 
 class AppConfigProvider extends ChangeNotifier {
   final ImageManager _imageManager = ImageManager();
   late AppConfig appConfig;
-
-  static late String appDirPath;
-  static late String outputDirPath;
-  static late String appConfigFilePath;
 
   AppConfigProvider() {
     // set up default values
@@ -34,17 +25,8 @@ class AppConfigProvider extends ChangeNotifier {
 
     var logger = SimpleLogger();
 
-    // set up path
-    Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    appDirPath = path.join(appDocumentsDir.path, ConstValues.AppDirName);
-    outputDirPath = path.join(appDirPath, ConstValues.OutputDirName);
-
-    await PathUtil.makeDir(appDirPath);
-    await PathUtil.makeDir(outputDirPath);
-    appConfigFilePath = path.join(appDirPath, ConstValues.ConfigFileName);
-
     try {
-      var jsonLoadedText = Util.loadTextFile(appConfigFilePath);
+      var jsonLoadedText = Util.loadTextFile(appConfig.appConfigFilePath);
       appConfig = deserialize<AppConfig>(jsonLoadedText!);
     } catch (e) {
       logger.warning(e.toString());
@@ -58,9 +40,9 @@ class AppConfigProvider extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    if (appConfigFilePath.isNotEmpty) {
+    if (appConfig.appConfigFilePath.isNotEmpty) {
       var jsonText = serialize(appConfig);
-      await Util.saveTextFile(jsonText, appConfigFilePath);
+      await Util.saveTextFile(jsonText, appConfig.appConfigFilePath);
     }
   }
 

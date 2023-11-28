@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import '../provider/AppConfigProvider.dart';
 
@@ -14,8 +15,11 @@ class HelpView extends StatelessWidget {
             margin: const EdgeInsets.all(24), child: _helpDocument(context)));
   }
 
-  String _getMarkdownDocument() {
-    String outputDirPath = AppConfigProvider.outputDirPath;
+  String _getMarkdownDocument(BuildContext context) {
+    AppConfigProvider appConfigProvider =
+        Provider.of<AppConfigProvider>(context, listen: false);
+
+    String outputDirPath = appConfigProvider.appConfig.outputDirPath;
     String markdownDocument = """
   # About this app
 
@@ -43,7 +47,7 @@ class HelpView extends StatelessWidget {
 
   Widget _helpDocument(BuildContext context) {
     return Markdown(
-        data: _getMarkdownDocument(),
+        data: _getMarkdownDocument(context),
         imageBuilder: _imageBuilder,
         softLineBreak: true);
   }
