@@ -11,14 +11,14 @@ import '../model/AppConfig.dart';
 import './ImagePropertyView.dart';
 import './ImageView.dart';
 
-class MyDropRegion extends StatefulWidget {
-  const MyDropRegion({Key? key}) : super(key: key);
+class HomeView extends StatefulWidget {
+  const HomeView({Key? key}) : super(key: key);
 
   @override
-  State<MyDropRegion> createState() => _MyDropRegion();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _MyDropRegion extends State<MyDropRegion> {
+class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();

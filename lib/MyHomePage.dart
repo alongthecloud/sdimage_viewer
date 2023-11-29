@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:oktoast/oktoast.dart';
-import './view/MyDropRegion.dart';
+import 'view/HomeView.dart';
 import './provider/ViewStateProvider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -68,8 +68,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }, builder: (context, child) {
       return Scaffold(
           body: OKToast(
-              child:
-                  Container(color: Colors.grey, child: const MyDropRegion())));
+              child: Container(color: Colors.grey, child: const HomeView())));
     });
   }
 }
