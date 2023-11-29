@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
-import '../provider/AppConfigProvider.dart';
+import '../model/AppPath.dart';
 
 class HelpView extends StatelessWidget {
   const HelpView({super.key});
@@ -16,10 +16,7 @@ class HelpView extends StatelessWidget {
   }
 
   String _getMarkdownDocument(BuildContext context) {
-    AppConfigProvider appConfigProvider =
-        Provider.of<AppConfigProvider>(context, listen: false);
-
-    String outputDirPath = appConfigProvider.appConfig.outputDirPath;
+    String outputDirPath = AppPath().outputDirPath;
     String markdownDocument = """
   # About this app
 
