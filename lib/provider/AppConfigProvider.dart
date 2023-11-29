@@ -3,6 +3,7 @@ import 'package:simple_logger/simple_logger.dart';
 import 'package:json_serializer/json_serializer.dart';
 import '../model/AppConfig.dart';
 import '../model/ImageManager.dart';
+import '../model/AppPath.dart';
 import '../util/Util.dart';
 import '../ImageAlignment.dart';
 
@@ -16,6 +17,8 @@ class AppConfigProvider extends ChangeNotifier {
   }
 
   void init() async {
+    var appPath = AppPath();
+
     JsonSerializer.options = JsonSerializerOptions(types: [
       UserType<AppConfig>(AppConfig.new),
       UserType<WaterMarkConfig>(WaterMarkConfig.new),
@@ -26,7 +29,7 @@ class AppConfigProvider extends ChangeNotifier {
     var logger = SimpleLogger();
 
     try {
-      var jsonLoadedText = Util.loadTextFile(appConfig.appConfigFilePath);
+      var jsonLoadedText = Util.loadTextFile(appPath.appConfigFilePath);
       appConfig = deserialize<AppConfig>(jsonLoadedText!);
     } catch (e) {
       logger.warning(e.toString());
@@ -40,9 +43,10 @@ class AppConfigProvider extends ChangeNotifier {
   }
 
   Future<void> save() async {
-    if (appConfig.appConfigFilePath.isNotEmpty) {
+    var appPath = AppPath();
+    if (appPath.appConfigFilePath.isNotEmpty) {
       var jsonText = serialize(appConfig);
-      await Util.saveTextFile(jsonText, appConfig.appConfigFilePath);
+      await Util.saveTextFile(jsonText, appPath.appConfigFilePath);
     }
   }
 

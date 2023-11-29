@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sdimage_viewer/provider/AppConfigProvider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:expandable_text/expandable_text.dart';
+import '../model/AppPath.dart';
 import '../model/ViewerState.dart';
 import '../util/WidgetUtil.dart';
 import '../util/Util.dart';
@@ -106,8 +107,10 @@ class ImagePropertyView extends StatelessWidget {
         prefix = appConfig.general!.savefileprefix;
       }
 
+      var appPath = AppPath();
+
       String targetPath = ImageUtil.getImageFullPath(
-          appConfig.outputDirPath, viewerState.curImagePath, prefix);
+          appPath.outputDirPath, viewerState.curImagePath, prefix);
 
       return (offset, targetPath);
     }

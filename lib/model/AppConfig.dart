@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:path/path.dart' as path;
 import 'package:json_serializer/json_serializer.dart';
 import '../ImageAlignment.dart';
-import '../ConstValues.dart';
 import '../util/PathUtil.dart';
+import './AppPath.dart';
 
 class AppConfig implements Serializable {
-  static String appDocumentDirPath = '';
-
   // json serialization
   String version;
   GeneralConfig? general;
@@ -17,22 +14,15 @@ class AppConfig implements Serializable {
   // not serialized
   AppUserData appUserData = AppUserData();
 
-  late String appDirPath;
-  late String outputDirPath;
-  late String appConfigFilePath;
-
   AppConfig({this.version = "1.0", this.general, this.watermark}) {
-    // set up path
-    appDirPath = path.join(appDocumentDirPath, ConstValues.AppDirName);
-    outputDirPath = path.join(appDirPath, ConstValues.OutputDirName);
-    appConfigFilePath = path.join(appDirPath, ConstValues.ConfigFileName);
-
     _init();
   }
 
   void _init() async {
-    await PathUtil.makeDir(appDirPath);
-    await PathUtil.makeDir(outputDirPath);
+    var appPath = AppPath();
+
+    await PathUtil.makeDir(appPath.appDirPath);
+    await PathUtil.makeDir(appPath.outputDirPath);
   }
 
   @override
