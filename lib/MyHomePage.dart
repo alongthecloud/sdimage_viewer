@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:oktoast/oktoast.dart';
 import 'view/HomeView.dart';
-import './provider/ViewStateProvider.dart';
+import './provider/ViewerStateProvider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -15,7 +15,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  ViewStateProvider? _viewStateProvider;
+  ViewerStateProvider? _viewStateProvider;
 
   @override
   void initState() {
@@ -41,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         if (_viewStateProvider != null) {
           var viewState = _viewStateProvider!.viewerState;
+          viewState.save();
+
           logger.info("opened image: ${viewState.curImagePath}");
         }
         logger.info('inactive');
@@ -63,7 +65,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     logger.info("run MyHomePage.build");
 
     return ChangeNotifierProvider(create: (context) {
-      _viewStateProvider ??= ViewStateProvider();
+      _viewStateProvider ??= ViewerStateProvider();
+      _viewStateProvider!.init();
       return _viewStateProvider;
     }, builder: (context, child) {
       return Scaffold(

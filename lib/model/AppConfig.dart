@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:json_serializer/json_serializer.dart';
 import '../ImageAlignment.dart';
-import '../util/PathUtil.dart';
-import './AppPath.dart';
 
 class AppConfig implements Serializable {
   // json serialization
@@ -14,16 +11,7 @@ class AppConfig implements Serializable {
   // not serialized
   AppUserData appUserData = AppUserData();
 
-  AppConfig({this.version = "1.0", this.general, this.watermark}) {
-    _init();
-  }
-
-  void _init() async {
-    var appPath = AppPath();
-
-    await PathUtil.makeDir(appPath.appDirPath);
-    await PathUtil.makeDir(appPath.outputDirPath);
-  }
+  AppConfig({this.version = "1.0", this.general, this.watermark});
 
   @override
   Map<String, dynamic> toMap() {
