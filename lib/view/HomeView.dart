@@ -4,7 +4,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
-import '../provider/ViewStateProvider.dart';
+import '../provider/ViewerStateProvider.dart';
 import '../provider/AppConfigProvider.dart';
 import '../model/ViewerState.dart';
 import '../model/AppConfig.dart';
@@ -25,7 +25,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _bottomBarWidget(
-      BuildContext context, ViewStateProvider viewStateProvider) {
+      BuildContext context, ViewerStateProvider viewStateProvider) {
     ViewerState viewerState = viewStateProvider.viewerState;
 
     var bottomBarItems = <Widget>[
@@ -79,7 +79,9 @@ class _HomeViewState extends State<HomeView> {
         children: childWidgets);
   }
 
-  Widget _bodyWidget(BuildContext context, ViewStateProvider viewStateProvider,
+  Widget _bodyWidget(
+      BuildContext context,
+      ViewerStateProvider viewStateProvider,
       AppConfigProvider appConfigProvider) {
     ViewerState viewerState = viewStateProvider.viewerState;
 
@@ -125,7 +127,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ViewStateProvider, AppConfigProvider>(
+    return Consumer2<ViewerStateProvider, AppConfigProvider>(
         builder: (context, viewStateProvider, appConfigProvider, child) {
       var child = SizedBox(
           child: DropTarget(

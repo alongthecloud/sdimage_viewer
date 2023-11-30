@@ -4,13 +4,18 @@ import 'dart:ui' as ui;
 import 'package:path/path.dart' as path;
 import 'package:sdimage_viewer/ExifToolExec.dart';
 import 'package:simple_logger/simple_logger.dart';
+import 'package:json_serializer/json_serializer.dart';
+import 'AppPath.dart';
+import 'DataManager.dart';
 import 'ImageManager.dart';
 import '../util/PathUtil.dart';
 import '../util/Metadata.dart';
-import '../provider/ViewStateProvider.dart';
+import '../util/Util.dart';
+import '../provider/ViewerStateProvider.dart';
 
 class ViewerState {
   final ImageManager _imageManager = ImageManager();
+  DataManager dataManager = DataManager(recentfiles: <String>[]);
 
   List<FileSystemEntity> imageFileList = [];
   String curImagePath = "";
@@ -20,6 +25,30 @@ class ViewerState {
   MetaData curImageMetaData = MetaData();
 
   StreamSubscription<FileSystemEvent>? eventSub;
+
+  String? getRecentFilePath() {
+    int lastIndex = dataManager.recentfiles.length - 1;
+    if (lastIndex < 0) {
+      return null;
+    }
+    String filePath = dataManager.recentfiles[lastIndex];
+    if (filePath.isEmpty) {
+      return null;
+    }
+
+    return filePath;
+  }
+
+  void save() async {
+    var appPath = AppPath();
+
+    // save data-manager
+    var targetFilePath = appPath.appDataFilePath;
+    if (targetFilePath.isNotEmpty) {
+      var jsonText = serialize(dataManager);
+      await Util.saveTextFile(jsonText, targetFilePath);
+    }
+  }
 
   String getCurrentPositionText() {
     return "${curImageIndex + 1} / ${imageFileList.length}";
@@ -64,9 +93,10 @@ class ViewerState {
           curImageMetaData.clear();
         }
       }),
-      _imageManager
-          .getImageDataFromFile(curImagePath)
-          .then((value) => curImageData = value)
+      _imageManager.getImageDataFromFile(curImagePath).then((value) {
+        dataManager.addRecentFile(curImagePath);
+        return curImageData = value;
+      })
     ]);
 
     return curImageData != null ? true : false;
@@ -152,7 +182,7 @@ class ViewerState {
 
     var stream = targetDirectory.watch();
     eventSub = stream.listen((event) {
-      var viewStateProvider = ViewStateProvider();
+      var viewStateProvider = ViewerStateProvider();
       var curImageFile = File(curImagePath);
       String aPath =
           curImageFile.existsSync() ? curImagePath : targetDirectory!.path;

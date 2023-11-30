@@ -5,7 +5,6 @@ import '../model/AppConfig.dart';
 import '../model/ImageManager.dart';
 import '../model/AppPath.dart';
 import '../util/Util.dart';
-import '../ImageAlignment.dart';
 
 class AppConfigProvider extends ChangeNotifier {
   final ImageManager _imageManager = ImageManager();
@@ -18,14 +17,6 @@ class AppConfigProvider extends ChangeNotifier {
 
   void init() async {
     var appPath = AppPath();
-
-    JsonSerializer.options = JsonSerializerOptions(types: [
-      UserType<AppConfig>(AppConfig.new),
-      UserType<WaterMarkConfig>(WaterMarkConfig.new),
-      UserType<GeneralConfig>(GeneralConfig.new),
-      EnumType<ImageAlignment>(ImageAlignment.values),
-    ]);
-
     var logger = SimpleLogger();
 
     try {

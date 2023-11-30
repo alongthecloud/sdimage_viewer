@@ -1,22 +1,19 @@
-import 'dart:io';
-import 'dart:collection';
 import 'package:json_serializer/json_serializer.dart';
 
 class DataManager implements Serializable {
-  List<String> recentFilePaths = [];
+  final List<String> recentfiles;
+  DataManager({required this.recentfiles});
 
-  DataManager(this.recentFilePaths);
-
-  void addRecentFile(File file) {
-    if (recentFilePaths.length > 3) {
-      recentFilePaths.removeAt(0);
+  void addRecentFile(String filePath) {
+    if (recentfiles.length >= 3) {
+      recentfiles.removeAt(0);
     }
 
-    recentFilePaths.add(file.path);
+    recentfiles.add(filePath);
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'recentFiles': recentFilePaths};
+    return {'recentfiles': recentfiles};
   }
 }

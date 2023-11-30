@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:provider/provider.dart';
 import 'package:simple_logger/simple_logger.dart';
 import '../model/AppPath.dart';
 
@@ -30,7 +29,7 @@ class HelpView extends StatelessWidget {
   * ![settings](icon://0e57f) : Show the settings dialog.
   * ![save](icon://0e550) : Save the current image specific path.
     * output directory : $outputDirPath
-  * Keyboard shortcuts 
+  * Keyboard shortcuts
     * The Left Arrow, Right Arrow, Home, and End Key moves to the previous image, next image, first image, and last image.
     * The Up arrow key moves to an image 10 steps previous, The Down arrow key moves to an image 10 steps next.
 
