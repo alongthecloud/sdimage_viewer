@@ -9,16 +9,21 @@ A Flutter-based stable diffusion image viewer for displaying images and informat
 This program show image and information(include prompts, negative prompts, etc)
 To look meta information need to [exiftool](https://exiftool.org)
 
+This program creates "sdviewer-alongthecloud" directory under the Documents directory for storing settings and etc.
+
 ## Features
 
-* Shows images (png,jpg,jpeg,webp) created with stable diffusion 
+* Shows images (png,jpg,jpeg,webp) created with stable diffusion
 * Shows prompts, negative prompts, etc. if exiftool is available
 * Prompts and negative prompts can be copied to clipboard with one click
 * Navigate to previous/next image in the same directory (on Mac, only when dragging and dropping directories)
+* You can attach a watermark image to the image and save it to a specific folder
 
 Supported
  - [x] A1111
  - [x] InvokeAI
+
+for more information, see in-program help
 
 ## Run and Build
 
