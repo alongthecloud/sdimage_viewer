@@ -49,6 +49,8 @@ class ImageView extends StatelessWidget {
         alignment: AlignmentDirectional.center,
         fit: StackFit.expand,
         children: <Widget>[_getImageWidget(context)]);
+
+    // return _getImageWidget(context);
   }
 }
 
