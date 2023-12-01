@@ -35,23 +35,16 @@ class MetaData {
     }
   }
 
-  String? toJson() {
+  String? toJson(bool prettyPrint) {
     // _metaTable to json
-    String jsonText = jsonEncode(_metaTable);
-    return jsonText;
-  }
-
-  String toString() {
-    final metaTable = _metaTable;
-    StringBuffer sb = StringBuffer();
-    if (metaTable.isNotEmpty) {
-      sb.writeln("\"meta\" : {");
-      metaTable.forEach((key, value) {
-        sb.writeln("\"$key\" : $value");
-      });
-      sb.writeln("}");
+    if (prettyPrint) {
+      JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+      String prettyprint = encoder.convert(_metaTable);
+      return prettyprint;
+    } else {
+      String jsonText = jsonEncode(_metaTable);
+      return jsonText;
     }
-    return sb.toString();
   }
 
   Map<String, String> getMetaTable() {

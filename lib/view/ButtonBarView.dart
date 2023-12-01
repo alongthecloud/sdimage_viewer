@@ -17,7 +17,7 @@ class ButtonBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var metaTable = viewerState.curImageMetaData.getMetaTable();
+    var metaData = viewerState.curImageMetaData;
 
     var appConfigProvider =
         Provider.of<AppConfigProvider>(context, listen: false);
@@ -88,7 +88,7 @@ class ButtonBarView extends StatelessWidget {
                   // bool exist = f.existsSync();
                   var modifiedTime = await f.lastModified();
                   sb.writeln("modify datetime : ${modifiedTime.toString()}");
-                  sb.writeln("meta : ${metaTable.toString()}");
+                  sb.writeln("meta : \n${metaData.toJson(true)}");
 
                   var metaFilePath =
                       "${path.withoutExtension(targetPath)}.meta.txt";

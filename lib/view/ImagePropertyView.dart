@@ -86,7 +86,7 @@ class ImagePropertyView extends StatelessWidget {
           child: Wrap(
               children: [WidgetUtil.ContentCopyIcon, const Text("Meta-data")]),
           onTap: () {
-            var value = metaTable.toString();
+            var value = viewerState.curImageMetaData.toJson(true);
             Util.copy2clipboard(context, "Meta-data", value);
           }));
 
