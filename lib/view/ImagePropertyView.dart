@@ -10,8 +10,7 @@ import '../util/MetaKeyword.dart';
 class ImagePropertyView extends StatelessWidget {
   final ViewerState viewerState;
 
-  const ImagePropertyView({Key? key, required this.viewerState})
-      : super(key: key);
+  ImagePropertyView({Key? key, required this.viewerState}) : super(key: key);
 
   static Widget _tableView(BuildContext context, Map<String, String> table) {
     var rows = <TableRow>[];

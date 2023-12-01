@@ -117,10 +117,7 @@ class _HomeViewState extends State<HomeView> {
           ])),
       const Divider(height: 3, thickness: 1),
       Expanded(
-          child: Container(
-              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-              child: ImagePropertyView(
-                  viewerState: viewStateProvider.viewerState))),
+          child: ImagePropertyView(viewerState: viewStateProvider.viewerState)),
       Container(
           height: 36,
           color: Colors.white,
