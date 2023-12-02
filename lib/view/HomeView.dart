@@ -22,9 +22,66 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  void _onKeyEvent(RawKeyEvent event, ViewerStateProvider viewerStateProvider) {
+    if (event.runtimeType == RawKeyDownEvent) {
+      switch (event.physicalKey) {
+        case PhysicalKeyboardKey.arrowLeft:
+          viewerStateProvider.moveToRelativeStep(-1);
+          break;
+        case PhysicalKeyboardKey.arrowRight:
+          viewerStateProvider.moveToRelativeStep(1);
+          break;
+        case PhysicalKeyboardKey.arrowDown:
+          viewerStateProvider.moveToRelativeStep(-10);
+          break;
+        case PhysicalKeyboardKey.arrowUp:
+          viewerStateProvider.moveToRelativeStep(10);
+          break;
+        case PhysicalKeyboardKey.home:
+          viewerStateProvider.moveToFirstImage();
+          break;
+        case PhysicalKeyboardKey.end:
+          viewerStateProvider.moveToLastImage();
+          break;
+      }
+    }
+  }
+
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    return Consumer2<ViewerStateProvider, AppConfigProvider>(
+        builder: (context, viewStateProvider, appConfigProvider, child) {
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        var imageFilename =
+            Path.basename(viewStateProvider.viewerState.curImagePath);
+        windowManager.setTitle(imageFilename);
+      }
+
+      return RawKeyboardListener(
+          focusNode: FocusNode(),
+          onKey: (event) => _onKeyEvent(event, viewStateProvider),
+          child: SizedBox(
+              child: DropTarget(child: LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final height = constraints.maxHeight;
+              final ratio = width / height;
+              if (width < 720 || ratio < 0.8) {
+                return _mobileBody(
+                    context, viewStateProvider, appConfigProvider);
+              } else {
+                return _desktopBody(
+                    context, viewStateProvider, appConfigProvider);
+              }
+            },
+          ), onDragDone: (details) {
+            var files = details.files;
+            if (files.isNotEmpty) {
+              var path = files[0].path;
+              viewStateProvider.dragImagePath(path);
+            }
+          })));
+    });
   }
 
   Widget _bottomBarWidget(
@@ -123,75 +180,5 @@ class _HomeViewState extends State<HomeView> {
           color: Colors.white,
           child: _bottomBarWidget(context, viewStateProvider))
     ]);
-  }
-
-  Widget _bodyWidget(
-      BuildContext context,
-      ViewerStateProvider viewStateProvider,
-      AppConfigProvider appConfigProvider) {
-    ViewerState viewerState = viewStateProvider.viewerState;
-
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      var imageFilename = Path.basename(viewerState.curImagePath);
-      windowManager.setTitle(imageFilename);
-    }
-
-    return RawKeyboardListener(
-        focusNode: FocusNode(),
-        onKey: (event) {
-          if (event.runtimeType == RawKeyDownEvent) {
-            switch (event.physicalKey) {
-              case PhysicalKeyboardKey.arrowLeft:
-                viewStateProvider.moveToRelativeStep(-1);
-                break;
-              case PhysicalKeyboardKey.arrowRight:
-                viewStateProvider.moveToRelativeStep(1);
-                break;
-              case PhysicalKeyboardKey.arrowDown:
-                viewStateProvider.moveToRelativeStep(-10);
-                break;
-              case PhysicalKeyboardKey.arrowUp:
-                viewStateProvider.moveToRelativeStep(10);
-                break;
-              case PhysicalKeyboardKey.home:
-                viewStateProvider.moveToFirstImage();
-                break;
-              case PhysicalKeyboardKey.end:
-                viewStateProvider.moveToLastImage();
-                break;
-            }
-          }
-        },
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-            final height = constraints.maxHeight;
-            final ratio = width / height;
-            if (width < 720 || ratio < 0.8) {
-              return _mobileBody(context, viewStateProvider, appConfigProvider);
-            } else {
-              return _desktopBody(
-                  context, viewStateProvider, appConfigProvider);
-            }
-          },
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer2<ViewerStateProvider, AppConfigProvider>(
-        builder: (context, viewStateProvider, appConfigProvider, child) {
-      var child = SizedBox(
-          child: DropTarget(
-              child: _bodyWidget(context, viewStateProvider, appConfigProvider),
-              onDragDone: (details) {
-                var files = details.files;
-                if (files.isNotEmpty) {
-                  var path = files[0].path;
-                  viewStateProvider.dragImagePath(path);
-                }
-              }));
-      return child;
-    });
   }
 }
