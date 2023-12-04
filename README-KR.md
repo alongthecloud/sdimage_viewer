@@ -16,6 +16,8 @@
 * 클릭으로 프롬프트, 네거티브 프롬프트를 클립보드에 복사
 * 같은 디렉토리의 이전/이후 파일로 이동할 수 있습니다. (맥에서는 디렉토리를 드래그 드랍 했을 때만 가능)
 * 이미지에 Watermark 이미지를 붙여 특정 폴더(Documents 폴더 아래)에 저장할 수 있습니다
+* 최초 시작 화면 추가
+* 현재 파일을 탐색기 또는 파인더에서 열 수 있습니다
 
 지원되는 생성 이미지
  - [x] A1111
@@ -46,8 +48,11 @@
 
 ```brew install exiftool```
 
+### 스크린샷
+
+![screenshot1](images/screenshot1.jpg) ![screenshot2](images/screenshot2.jpg)
+
 ## 사용
-![screenshot0](images/screenshot1.jpg)
 
 이미지를 윈도우로 드래그 앤 드랍
 
