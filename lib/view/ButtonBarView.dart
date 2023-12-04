@@ -7,13 +7,15 @@ import '../model/ViewerState.dart';
 import '../provider/AppConfigProvider.dart';
 import '../util/ImageUtil.dart';
 import '../util/Util.dart';
+import '../ExternalToolExec.dart';
 import 'HelpView.dart';
 import 'SettingsView.dart';
 
 class ButtonBarView extends StatelessWidget {
   final ViewerState viewerState;
+  final double iconSize;
 
-  ButtonBarView({required this.viewerState});
+  ButtonBarView({super.key, required this.viewerState, required this.iconSize});
 
   @override
   Widget build(BuildContext context) {
@@ -57,69 +59,72 @@ class ButtonBarView extends StatelessWidget {
       return (offset, targetPath);
     }
 
-    var buttonShape = const CircleBorder();
-    var buttonColor = Colors.blueGrey;
+    iconButton(IconData iconData, VoidCallback onPressed) {
+      var icon = Icon(iconData);
+      return IconButton(
+          autofocus: true,
+          iconSize: iconSize,
+          onPressed: onPressed,
+          icon: icon,
+          style: IconButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: Colors.white, // <-- Button color
+            foregroundColor: Colors.blueGrey, // <-- Splash color
+          ));
+    }
 
-    return ButtonBar(alignment: MainAxisAlignment.end, children: [
-      MaterialButton(
-          color: buttonColor,
-          shape: buttonShape,
-          onPressed: () {
-            var offsetAndPath = getOffsetAndPath();
-            var offset = offsetAndPath.$1;
-            var targetPath = offsetAndPath.$2;
+    return ButtonBar(buttonPadding: EdgeInsets.all(4), children: [
+      // open folder button
+      iconButton(Icons.open_in_browser, () async {
+        ExternalToolExec.openShell(viewerState.curImagePath);
+      }),
+      // save button
+      iconButton(Icons.save, () {
+        var offsetAndPath = getOffsetAndPath();
+        var offset = offsetAndPath.$1;
+        var targetPath = offsetAndPath.$2;
 
-            ImageUtil.saveImageWithWatermark(
-                    targetPath,
-                    viewerState.curImageData,
-                    appUserData.waterMarkImage,
-                    offset)
-                .then((result) async {
-              if (result == true) {
-                Util.showToastMessage(
-                    context, "Image saved !", const Duration(seconds: 1));
+        ImageUtil.saveImageWithWatermark(targetPath, viewerState.curImageData,
+                appUserData.waterMarkImage, offset)
+            .then((result) async {
+          if (result == true) {
+            Util.showToastMessage(
+                context, "Image saved !", const Duration(seconds: 1));
 
-                if (appConfig.general != null &&
-                    appConfig.general!.savewithmetatext) {
-                  StringBuffer sb = StringBuffer();
-                  sb.writeln("original file : ${viewerState.curImagePath}");
+            if (appConfig.general != null &&
+                appConfig.general!.savewithmetatext) {
+              StringBuffer sb = StringBuffer();
+              sb.writeln("original file : ${viewerState.curImagePath}");
 
-                  File f = File(viewerState.curImagePath);
-                  // bool exist = f.existsSync();
-                  var modifiedTime = await f.lastModified();
-                  sb.writeln("modify datetime : ${modifiedTime.toString()}");
-                  sb.writeln("meta : \n${metaData.toJson(true)}");
+              File f = File(viewerState.curImagePath);
+              // bool exist = f.existsSync();
+              var modifiedTime = await f.lastModified();
+              sb.writeln("modify datetime : ${modifiedTime.toString()}");
+              sb.writeln("meta : \n${metaData.toJson(true)}");
 
-                  var metaFilePath =
-                      "${path.withoutExtension(targetPath)}.meta.txt";
+              var metaFilePath =
+                  "${path.withoutExtension(targetPath)}.meta.txt";
 
-                  Util.saveTextFile(sb.toString(), metaFilePath);
-                }
-              }
-            });
-          },
-          child: const Icon(Icons.save)),
-      MaterialButton(
-          color: buttonColor,
-          shape: buttonShape,
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return SettingsView(appConfig: appConfigProvider.appConfig);
-            })).then((value) {
-              appConfigProvider.save();
-              appConfigProvider.update();
-              return null;
-            });
-          },
-          child: const Icon(Icons.settings)),
-      MaterialButton(
-          color: buttonColor,
-          shape: buttonShape,
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HelpView()));
-          },
-          child: const Icon(Icons.help)),
+              Util.saveTextFile(sb.toString(), metaFilePath);
+            }
+          }
+        });
+      }),
+      // settings button
+      iconButton(Icons.settings, () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return SettingsView(appConfig: appConfigProvider.appConfig);
+        })).then((value) {
+          appConfigProvider.save();
+          appConfigProvider.update();
+          return null;
+        });
+      }),
+      // help button
+      iconButton(Icons.help, () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const HelpView()));
+      })
     ]);
   }
 }

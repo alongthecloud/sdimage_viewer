@@ -144,7 +144,8 @@ class _HomeViewState extends State<HomeView> {
       SizedBox(
           width: 380,
           child: Column(children: [
-            ButtonBarView(viewerState: viewStateProvider.viewerState),
+            ButtonBarView(
+                viewerState: viewStateProvider.viewerState, iconSize: 30),
             const SizedBox(height: 2),
             ImagePropertyView(viewerState: viewStateProvider.viewerState)
           ]))
@@ -173,11 +174,11 @@ class _HomeViewState extends State<HomeView> {
           child: Stack(children: [
             _mainViewWidget(context, viewStateProvider.viewerState,
                 appConfigProvider.appConfig),
-            ButtonBarView(viewerState: viewStateProvider.viewerState),
+            ButtonBarView(
+                viewerState: viewStateProvider.viewerState, iconSize: 24),
           ])),
       const Divider(height: 3, thickness: 1),
-      Expanded(
-          child: ImagePropertyView(viewerState: viewStateProvider.viewerState)),
+      ImagePropertyView(viewerState: viewStateProvider.viewerState),
       Container(
           height: 36,
           color: Colors.white,

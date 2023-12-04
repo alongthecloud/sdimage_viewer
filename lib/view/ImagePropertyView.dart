@@ -53,10 +53,10 @@ class ImagePropertyView extends StatelessWidget {
     } else {
       keyWidget = Text(key);
       if (key == MetaKeyword.Model) {
-        valueWidget =
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold));
+        valueWidget = SelectableText(value,
+            style: const TextStyle(fontWeight: FontWeight.bold));
       } else {
-        valueWidget = Text(value);
+        valueWidget = SelectableText(value);
       }
     }
 
@@ -99,7 +99,9 @@ class ImagePropertyView extends StatelessWidget {
     }
 
     return Expanded(
-      child: ListView(shrinkWrap: true, children: sideItems),
+      child: Container(
+          padding: const EdgeInsets.all(4),
+          child: ListView(shrinkWrap: true, children: sideItems)),
     );
   }
 }
