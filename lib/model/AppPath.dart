@@ -34,14 +34,20 @@ class AppPath {
 
   Future<void> init() async {
     Directory appDocumentDir = await getApplicationDocumentsDirectory();
-    _appDocumentDirPath = appDocumentDir.path;
 
+    _appDocumentDirPath = appDocumentDir.path;
     _appDirPath = path.join(appDocumentDirPath, AppDirName);
     _outputDirPath = path.join(appDirPath, OutputDirName);
     _appConfigFilePath = path.join(appDirPath, ConfigFileName);
     _appDataDirPath = path.join(appDirPath, DataDirName);
     _appDataFilePath = path.join(_appDataDirPath, DataFileName);
+  }
 
+  bool isExistPath() {
+    return Directory(_appDirPath).existsSync();
+  }
+
+  Future<void> makeDir() async {
     await PathUtil.makeDir(appDataDirPath);
     await PathUtil.makeDir(appDirPath);
     await PathUtil.makeDir(outputDirPath);

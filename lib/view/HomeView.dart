@@ -49,13 +49,16 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ViewerStateProvider, AppConfigProvider>(
-        builder: (context, viewStateProvider, appConfigProvider, child) {
+    return Consumer<ViewerStateProvider>(
+        builder: (context, viewStateProvider, child) {
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
         var imageFilename =
             Path.basename(viewStateProvider.viewerState.curImagePath);
         windowManager.setTitle(imageFilename);
       }
+
+      var appConfigProvider =
+          Provider.of<AppConfigProvider>(context, listen: false);
 
       return RawKeyboardListener(
           focusNode: FocusNode(),

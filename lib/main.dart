@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +10,7 @@ import './provider/AppConfigProvider.dart';
 import './model/AppPath.dart';
 import './model/AppConfig.dart';
 import './model/DataManager.dart';
+import 'view/StartupView.dart';
 import 'ImageAlignment.dart';
 import 'MyHomePage.dart';
 
@@ -32,17 +35,22 @@ void main() async {
   var appPath = AppPath();
   await appPath.init();
 
-  runApp(const MyApp());
+  return runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
+// Make scrolling possible with mouse drag
+class CustomScrollBehavior extends MaterialScrollBehavior {
   @override
-  State<MyApp> createState() => _MyAppState();
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        // etc.
+      };
 }
 
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     const titleText = "Image Viewer for SD";
@@ -52,19 +60,25 @@ class _MyAppState extends State<MyApp> {
 
     return ChangeNotifierProvider(create: (context) {
       var appConfigProvider = AppConfigProvider();
-      appConfigProvider.init();
+      if (AppPath().isExistPath()) appConfigProvider.init();
+
       return appConfigProvider;
     }, builder: (context, child) {
-      var app = MaterialApp(
-          title: titleText,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: const MyHomePage(title: titleText));
-
-      // return app;
-      return app;
+      return Consumer<AppConfigProvider>(
+        builder: (context, appConfigProvider, child) {
+          bool isExistPath = AppPath().isExistPath();
+          var app = MaterialApp(
+              title: titleText,
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                useMaterial3: true,
+              ),
+              home: isExistPath
+                  ? const MyHomePage(title: titleText)
+                  : const StartupView());
+          return app;
+        },
+      );
     });
   }
 }
