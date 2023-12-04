@@ -18,8 +18,9 @@ This program creates "sdviewer-alongthecloud" directory under the Documents dire
 * Prompts and negative prompts can be copied to clipboard with one click
 * Navigate to previous/next image in the same directory (on Mac, only when dragging and dropping directories)
 * You can attach a watermark image to the image and save it to a specific folder
+* Adds an start up page
+* Current file can be opened in Explorer or Finder
 
-Supported
  - [x] A1111
  - [x] InvokeAI
 
@@ -47,9 +48,12 @@ If you are using [brew](https://brew.sh), you can install exiftool with the foll
 
 ```brew install exiftool```
 
-## Usage
+## ScreenShot
 
-![screenshot0](images/screenshot1.jpg)
+![screenshot1](images/screenshot1.jpg)
+![screenshot2](images/screenshot2.jpg)
+
+## Usage
 
 Drag and drop images to the window
 
