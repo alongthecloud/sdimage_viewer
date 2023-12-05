@@ -1,7 +1,6 @@
-name: Manual Build and Package Flutter App
+name: Build and Package Flutter App on push tag
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - '*'
