@@ -1,9 +1,12 @@
-name: Build and Package Flutter App
+name: Manual Build and Package Flutter App
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release Tag'     
+        required: true
+        
 jobs:
   win-build-and-package:
     runs-on: windows-latest
