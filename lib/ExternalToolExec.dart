@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:simple_logger/simple_logger.dart';
@@ -9,15 +8,22 @@ class ExternalToolExec {
 
     try {
       if (Platform.isWindows) {
-        ProcessResult result = await Process.run('explorer.exe ', [
+        // explorer /select file-path
+        await Process.run('explorer.exe ', [
           '/select,',
           targetPath,
         ]);
       } else if (Platform.isMacOS) {
-        // TODO : open -R your-file-path
+        // open -R file-path
+        var Result = await Process.run('open', [
+          '-R',
+          targetPath,
+        ]);
+
+        logger.info(Result.exitCode);
       }
-    } on Exception {
-      logger.log(Level.WARNING, "Failed to openShell");
+    } catch (e) {
+      logger.log(Level.WARNING, "Failed to openShell : $e");
       return false;
     }
 
