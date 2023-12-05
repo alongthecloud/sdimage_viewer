@@ -29,8 +29,11 @@ jobs:
           filename: SDImageViewer-${{github.event.inputs.tag}}-windows.zip
           directory: build/windows/x64/runner/Release
       - name: Window release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
-          files: build/windows/x64/runner/Release/SDImageViewer-${{github.event.inputs.tag}}-windows.zip
-
+              uses: ncipollo/release-action@v1
+              with:
+                allowUpdates: true
+                artifacts: build/windows/x64/runner/Release/SDImageViewer-${{github.event.inputs.tag}}-windows.zip
+                generateReleaseNotes: true
+                tag: ${{ github.event.inputs.tag }}
+                # 事前に登録したtokenを使用
+                token: ${{ secrets.REPO_TOKEN }}
