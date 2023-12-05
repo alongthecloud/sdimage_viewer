@@ -35,6 +35,10 @@ You need Flutter and Visual Studio or XCode to run and build for desktop app.
 3. `flutter run` to execute
 4. build with `flutter build` command
 
+* There is a problem that exiftool does not work and can't display metadata when this program is run from the Applications directory. This is a part that was confirmed to work properly in a previous version.
+* since I am not using a Mac very much and am considering replacing exiftool, there are no plans to resolve this issue for the time being.
+* There seems to be no problem when running with `flutter run`.
+
 ## Install exiftool
 ### Windows
 Using the 'App Installer' makes installation easy
