@@ -1,4 +1,4 @@
-name: Build and Package Flutter App on Manual Trigger
+name: Build,Package on Manual Trigger
 
 on:
   workflow_dispatch:

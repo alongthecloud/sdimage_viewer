@@ -1,4 +1,4 @@
-name: Build and Package Flutter App on push tag
+name: Build,Package on push tag
 
 on:
   push:
