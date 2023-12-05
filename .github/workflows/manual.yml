@@ -1,0 +1,36 @@
+name: Build and Package Flutter App on Manual Trigger
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release Tag'
+        required: true
+
+jobs:
+  win-build-and-package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.16.0'
+      - name: get dependencies
+        run: flutter pub get
+      - name: enable windows build
+        run: flutter config --enable-windows-desktop
+      - name: build
+        run: flutter build windows --release
+      - name: Zip release
+        uses: TheDoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: SDImageViewer-${{github.event.inputs.tag}}-windows.zip
+          directory: build/windows/x64/runner/Release
+      - name: Window release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          files: build/windows/x64/runner/Release/SDImageViewer-${{github.event.inputs.tag}}-windows.zip
+
