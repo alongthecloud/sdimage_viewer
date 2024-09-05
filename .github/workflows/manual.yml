@@ -33,6 +33,6 @@ jobs:
         with:
           allowUpdates: true
           artifacts: build/windows/x64/runner/Release/SDImageViewer-${{github.event.inputs.tag}}-windows.zip
-          generateReleaseNotes: true
+          generateReleaseNotes: false
           tag: ${{ github.event.inputs.tag }}
           token: ${{ secrets.REPO_TOKEN }}
