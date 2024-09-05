@@ -11,20 +11,24 @@ class _StringUtils {
 }
 
 abstract class MetadataParser {
-  late Map<String, String> metaTable;
-  MetadataParser(this.metaTable);
+  late Map<String, String> _metaTable;
+  MetadataParser(this._metaTable);
+
+  void addMetaTable(String key, String value) {
+    _metaTable[key] = value;
+  }
 
   bool fromMetaText(Map<String, dynamic> firstData);
 }
 
 class MetadataParserInvokeAI extends MetadataParser {
-  MetadataParserInvokeAI(super.metaTable);
+  MetadataParserInvokeAI(super._metaTable);
 
   bool _addParam(Map<String, dynamic> firstData, String param) {
     String? key = MetaKeywordTable.InvokeAI[param];
     if (key == null) return false;
 
-    metaTable[param] = firstData[key].toString();
+    addMetaTable(param, firstData[key].toString());
     return true;
   }
 
@@ -48,7 +52,7 @@ class MetadataParserInvokeAI extends MetadataParser {
 }
 
 class MetadataParserA1111 extends MetadataParser {
-  MetadataParserA1111(super.metaTable);
+  MetadataParserA1111(super._metaTable);
 
   String _preprocessing(String str) {
     var modelKeyword = MetaKeywordTable.A1111[MetaKeyword.Model];
@@ -97,7 +101,7 @@ class MetadataParserA1111 extends MetadataParser {
 
   void _addTable(String k, String v) {
     v = _StringUtils.trimming(v, " \t\n\r");
-    metaTable[k] = v;
+    addMetaTable(k, v);
   }
 
   bool _addParam(String metaText, String param,
