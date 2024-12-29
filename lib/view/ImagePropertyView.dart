@@ -25,7 +25,7 @@ class ImagePropertyView extends StatelessWidget {
     return Table(
         children: rows,
         border:
-            TableBorder.all(color: Colors.black.withOpacity(0.3), width: 0.3),
+            TableBorder.all(color: Colors.black.withAlpha(0x33), width: 0.5),
         columnWidths: const {
           0: FlexColumnWidth(1),
           1: FlexColumnWidth(1.8),
@@ -33,12 +33,11 @@ class ImagePropertyView extends StatelessWidget {
   }
 
   static TableRow _tableRow(BuildContext context, String key, String value) {
-    var copyEnableKeywords = [MetaKeyword.Prompt, MetaKeyword.Negative_prompt];
-
     Widget keyWidget;
     Widget valueWidget;
 
-    if (copyEnableKeywords.contains(key)) {
+    final String lowerKey = key.toLowerCase();
+    if (lowerKey.contains("prompt") || lowerKey.contains("cliptext")) {
       keyWidget = InkWell(
           child: Wrap(children: [WidgetUtil.ContentCopyIcon, Text(key)]),
           onTap: () {
@@ -52,12 +51,7 @@ class ImagePropertyView extends StatelessWidget {
           maxLines: 4);
     } else {
       keyWidget = Text(key);
-      if (key == MetaKeyword.Model) {
-        valueWidget = SelectableText(value,
-            style: const TextStyle(fontWeight: FontWeight.bold));
-      } else {
-        valueWidget = SelectableText(value);
-      }
+      valueWidget = SelectableText(value);
     }
 
     return TableRow(children: [

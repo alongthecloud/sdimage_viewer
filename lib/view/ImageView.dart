@@ -17,8 +17,7 @@ class ImageView extends StatelessWidget {
     var appUserData = appConfig!.appUserData;
     var watermarkconfig = appConfig!.watermark;
 
-    ui.Image? imageData =
-        viewerState != null ? viewerState!.curImageData : null;
+    ui.Image? imageData = viewerState?.curImageData;
 
     ui.Image? watermarkImageData;
     double watermarkMargin = 2.0;
@@ -62,12 +61,12 @@ class ImagePainter extends CustomPainter {
   ImageAlignment watermarkAlignment;
 
   ImagePainter({
-    Listenable? repaint,
+    super.repaint,
     this.image,
     this.watermarkImage,
     this.watermarkMargin = 0.0,
     this.watermarkAlignment = ImageAlignment.topLeft,
-  }) : super(repaint: repaint);
+  });
 
   Offset _calcScaleFactor(double srcWidth, double srcHeight, double targetWidth,
       double targetHeight) {
