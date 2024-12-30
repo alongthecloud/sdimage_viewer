@@ -53,6 +53,7 @@ dependencies:
   json_serializer: ^0.2.0
   flutter_markdown: ^0.7.3+1
   url_launcher: ^6.2.1
+  shared_preferences: ^2.3.4
   #dev
   simple_logger: ^1.9.0+3
 
