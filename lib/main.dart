@@ -7,11 +7,8 @@ import 'package:json_serializer/json_serializer.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:window_manager/window_manager.dart';
 import './provider/AppConfigProvider.dart';
-import './model/AppPath.dart';
 import './model/AppConfig.dart';
 import './model/DataManager.dart';
-import 'view/StartupView.dart';
-import 'ImageAlignment.dart';
 import 'MyHomePage.dart';
 
 void main() async {
@@ -26,14 +23,9 @@ void main() async {
 
   JsonSerializer.options = JsonSerializerOptions(types: [
     UserType<AppConfig>(AppConfig.new),
-    UserType<WaterMarkConfig>(WaterMarkConfig.new),
     UserType<GeneralConfig>(GeneralConfig.new),
     UserType<DataManager>(DataManager.new),
-    EnumType<ImageAlignment>(ImageAlignment.values),
   ]);
-
-  var appPath = AppPath();
-  await appPath.init();
 
   return runApp(MyApp());
 }
@@ -60,22 +52,19 @@ class MyApp extends StatelessWidget {
 
     return ChangeNotifierProvider(create: (context) {
       var appConfigProvider = AppConfigProvider();
-      if (AppPath().isExistPath()) appConfigProvider.init();
+      appConfigProvider.init();
 
       return appConfigProvider;
     }, builder: (context, child) {
       return Consumer<AppConfigProvider>(
         builder: (context, appConfigProvider, child) {
-          bool isExistPath = AppPath().isExistPath();
           var app = MaterialApp(
               title: titleText,
               theme: ThemeData(
                 colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                 useMaterial3: true,
               ),
-              home: isExistPath
-                  ? const MyHomePage(title: titleText)
-                  : const StartupView());
+              home: const MyHomePage(title: titleText));
           return app;
         },
       );

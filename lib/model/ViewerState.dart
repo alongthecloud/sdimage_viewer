@@ -5,12 +5,11 @@ import 'package:path/path.dart' as path;
 import 'package:sdimage_viewer/ExifToolExec.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:json_serializer/json_serializer.dart';
-import 'AppPath.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'DataManager.dart';
 import 'ImageManager.dart';
 import '../util/PathUtil.dart';
 import '../util/Metadata.dart';
-import '../util/Util.dart';
 import '../provider/ViewerStateProvider.dart';
 
 class ViewerState {
@@ -40,14 +39,10 @@ class ViewerState {
   }
 
   void save() async {
-    var appPath = AppPath();
-
-    // save data-manager
-    var targetFilePath = appPath.appDataFilePath;
-    if (targetFilePath.isNotEmpty) {
-      var jsonText = serialize(dataManager);
-      await Util.saveTextFile(jsonText, targetFilePath);
-    }
+    // save data (DataManager)
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var jsonText = serialize(dataManager);
+    await prefs.setString('dataManager', jsonText);
   }
 
   String getCurrentPositionText() {

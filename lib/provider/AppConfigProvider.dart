@@ -1,10 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:simple_logger/simple_logger.dart';
-import 'package:json_serializer/json_serializer.dart';
 import '../model/AppConfig.dart';
 import '../model/ImageManager.dart';
-import '../model/AppPath.dart';
-import '../util/Util.dart';
 
 class AppConfigProvider extends ChangeNotifier {
   final ImageManager _imageManager = ImageManager();
@@ -16,16 +12,6 @@ class AppConfigProvider extends ChangeNotifier {
   }
 
   void init() async {
-    var appPath = AppPath();
-    var logger = SimpleLogger();
-
-    try {
-      var jsonLoadedText = Util.loadTextFile(appPath.appConfigFilePath);
-      appConfig = deserialize<AppConfig>(jsonLoadedText!);
-    } catch (e) {
-      logger.warning(e.toString());
-    }
-
     appConfig.watermark ??= WaterMarkConfig();
     appConfig.general ??= GeneralConfig();
 
@@ -33,13 +19,7 @@ class AppConfigProvider extends ChangeNotifier {
     update();
   }
 
-  Future<void> save() async {
-    var appPath = AppPath();
-    if (appPath.appConfigFilePath.isNotEmpty) {
-      var jsonText = serialize(appConfig);
-      await Util.saveTextFile(jsonText, appPath.appConfigFilePath);
-    }
-  }
+  Future<void> save() async {}
 
   Future<void> _updateWatermarkImage() async {
     var waterMarkConfig = appConfig.watermark;

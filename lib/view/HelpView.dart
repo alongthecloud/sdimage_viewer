@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../model/AppPath.dart';
 
 class HelpView extends StatelessWidget {
   const HelpView({super.key});
@@ -16,7 +15,6 @@ class HelpView extends StatelessWidget {
   }
 
   String _getMarkdownDocument() {
-    String outputDirPath = AppPath().outputDirPath;
     String markdownDocument = """
   # About this app
 
@@ -28,8 +26,6 @@ class HelpView extends StatelessWidget {
 
   * ![help](icon://help) : Show this help.
   * ![settings](icon://settings) : Show the settings dialog.
-  * ![save](icon://save) : Save the current image specific path.
-    * output directory : $outputDirPath
   * ![open-shell](icon://open_in_browser) : Open the current image in Explorer or Finder
 
   * Keyboard shortcuts

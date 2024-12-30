@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:json_serializer/json_serializer.dart';
 import 'package:simple_logger/simple_logger.dart';
-import '../model/AppPath.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/DataManager.dart';
 import '../model/ViewerState.dart';
-import '../util/Util.dart';
 
 class ViewerStateProvider extends ChangeNotifier {
   ViewerStateProvider._privateConstructor();
@@ -18,19 +17,28 @@ class ViewerStateProvider extends ChangeNotifier {
 
   void init() {
     var logger = SimpleLogger();
-
     try {
-      var appPath = AppPath();
-      var jsonLoadedText = Util.loadTextFile(appPath.appDataFilePath);
-      var dataManager = deserialize<DataManager>(jsonLoadedText!);
-      viewerState.dataManager = dataManager;
-
-      String? filePath = viewerState.getRecentFilePath();
-      if (filePath != null) {
-        dragImagePath(filePath);
-      }
+      Future<DataManager> dataManager = _initDataManager();
+      dataManager.then((value) {
+        viewerState.dataManager = value;
+        String? filePath = viewerState.getRecentFilePath();
+        if (filePath != null) {
+          dragImagePath(filePath);
+        }
+      });
     } catch (e) {
       logger.warning(e.toString());
+    }
+  }
+
+  Future<DataManager> _initDataManager() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? jsonText = prefs.getString('dataManager');
+    if (jsonText != null) {
+      return deserialize<DataManager>(jsonText!);
+    } else {
+      return DataManager(recentfiles: []);
     }
   }
 
