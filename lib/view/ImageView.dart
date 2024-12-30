@@ -10,25 +10,10 @@ class ImageView extends StatelessWidget {
   final ViewerState? viewerState;
   final AppConfig? appConfig;
 
-  const ImageView({Key? key, this.viewerState, this.appConfig})
-      : super(key: key);
+  const ImageView({super.key, this.viewerState, this.appConfig});
 
   Widget _getImageWidget(BuildContext context) {
-    var appUserData = appConfig!.appUserData;
-    var watermarkconfig = appConfig!.watermark;
-
     ui.Image? imageData = viewerState?.curImageData;
-
-    ui.Image? watermarkImageData;
-    double watermarkMargin = 2.0;
-    var watermarkAlignment = ImageAlignment.bottomRight;
-    if (appConfig != null &&
-        watermarkconfig != null &&
-        watermarkconfig.enable) {
-      watermarkImageData = appUserData.waterMarkImage;
-      watermarkMargin = watermarkconfig.margin.toDouble();
-      watermarkAlignment = watermarkconfig.alignment;
-    }
 
     if (imageData == null) {
       return const SizedBox.shrink();
@@ -36,9 +21,9 @@ class ImageView extends StatelessWidget {
       return CustomPaint(
           painter: ImagePainter(
               image: imageData,
-              watermarkImage: watermarkImageData,
-              watermarkMargin: watermarkMargin,
-              watermarkAlignment: watermarkAlignment));
+              watermarkImage: null,
+              watermarkMargin: 0.0,
+              watermarkAlignment: ImageAlignment.bottomRight));
     }
   }
 

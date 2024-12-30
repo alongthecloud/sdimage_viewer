@@ -10,7 +10,6 @@ import 'package:window_manager/window_manager.dart';
 import '../provider/ViewerStateProvider.dart';
 import '../provider/AppConfigProvider.dart';
 import '../model/ViewerState.dart';
-import '../model/AppConfig.dart';
 import './ImagePropertyView.dart';
 import './ImageView.dart';
 
@@ -60,24 +59,36 @@ class _HomeViewState extends State<HomeView> {
       var appConfigProvider =
           Provider.of<AppConfigProvider>(context, listen: false);
 
+      final buttonBar = ButtonBarView(
+          viewerState: viewStateProvider.viewerState, iconSize: 24);
+      Widget leftWidget =
+          _mainViewWidget(context, viewStateProvider.viewerState);
+      Widget rightWidget =
+          ImagePropertyView(viewerState: viewStateProvider.viewerState);
+
+      Widget bottomWidget = Container(
+          color: Colors.white,
+          height: 42,
+          child: _bottomBarWidget(context, viewStateProvider));
+
       return RawKeyboardListener(
           focusNode: FocusNode(),
           onKey: (event) => _onKeyEvent(event, viewStateProvider),
           child: SizedBox(
-              child: DropTarget(child: LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              final height = constraints.maxHeight;
-              final ratio = width / height;
-              if (width < 720 || ratio < 0.8) {
-                return _mobileBody(
-                    context, viewStateProvider, appConfigProvider);
-              } else {
-                return _desktopBody(
-                    context, viewStateProvider, appConfigProvider);
-              }
-            },
-          ), onDragDone: (details) {
+              child: DropTarget(
+                  child: LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final height = constraints.maxHeight;
+            final ratio = width / height;
+            final mobileLayout = (width < 720 || ratio < 0.8);
+            if (mobileLayout) {
+              return _mobileBody(
+                  context, buttonBar, leftWidget, rightWidget, bottomWidget);
+            } else {
+              return _desktopBody(
+                  context, buttonBar, leftWidget, rightWidget, bottomWidget);
+            }
+          }), onDragDone: (details) {
             var files = details.files;
             if (files.isNotEmpty) {
               var path = files[0].path;
@@ -124,65 +135,44 @@ class _HomeViewState extends State<HomeView> {
     return bottomBar;
   }
 
-  Widget _mainViewWidget(
-      BuildContext context, ViewerState viewerState, AppConfig appConfig) {
+  Widget _mainViewWidget(BuildContext context, ViewerState viewerState) {
     return Container(
         margin: const EdgeInsets.fromLTRB(1, 1, 0, 1),
-        child: ImageView(viewerState: viewerState, appConfig: appConfig));
+        child: ImageView(viewerState: viewerState));
   }
 
-  Widget _desktopBody(
-      BuildContext context,
-      ViewerStateProvider viewStateProvider,
-      AppConfigProvider appConfigProvider) {
-    // left to right
-    var childWidgets = [
-      Expanded(
-          child: _mainViewWidget(context, viewStateProvider.viewerState,
-              appConfigProvider.appConfig)),
-      const VerticalDivider(thickness: 1, width: 5),
-      SizedBox(
-          width: 380,
-          child: Column(children: [
-            ButtonBarView(
-                viewerState: viewStateProvider.viewerState, iconSize: 30),
-            const SizedBox(height: 2),
-            ImagePropertyView(viewerState: viewStateProvider.viewerState)
-          ]))
-    ]; // return Container(color: Colors.grey, child: childWidget);
-
+  Widget _desktopBody(BuildContext context, Widget buttonBar, Widget leftWidget,
+      Widget rightWidget, Widget bottomWidget) {
     return Column(children: [
       Expanded(
           child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: childWidgets)),
-      Container(
-          color: Colors.white,
-          height: 42,
-          child: _bottomBarWidget(context, viewStateProvider))
+        children: [
+          Expanded(
+            child: leftWidget,
+          ),
+          const VerticalDivider(thickness: 1, width: 5),
+          SizedBox(
+            width: 380,
+            child: Column(children: [buttonBar, rightWidget]),
+          ),
+        ],
+      )),
+      Container(color: Colors.white, height: 42, child: bottomWidget)
     ]);
   }
 
-  Widget _mobileBody(
-      BuildContext context,
-      ViewerStateProvider viewStateProvider,
-      AppConfigProvider appConfigProvider) {
+  Widget _mobileBody(BuildContext context, Widget buttonBar, Widget leftWidget,
+      Widget rightWidget, Widget bottomWidget) {
     return Column(children: [
       Flexible(
           fit: FlexFit.tight,
           child: Stack(children: [
-            _mainViewWidget(context, viewStateProvider.viewerState,
-                appConfigProvider.appConfig),
-            ButtonBarView(
-                viewerState: viewStateProvider.viewerState, iconSize: 24),
+            leftWidget,
+            buttonBar,
           ])),
       const Divider(height: 3, thickness: 1),
-      ImagePropertyView(viewerState: viewStateProvider.viewerState),
-      Container(
-          height: 36,
-          color: Colors.white,
-          child: _bottomBarWidget(context, viewStateProvider))
+      rightWidget,
+      bottomWidget,
     ]);
   }
 }
