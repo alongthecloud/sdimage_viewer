@@ -18,6 +18,8 @@ jobs:
           flutter-version: '3.16.0'
       - name: get dependencies
         run: flutter pub get
+      - name: Disable Flutter telemetry
+        run: flutter --disable-telemetry
       - name: enable windows build
         run: flutter config --enable-windows-desktop
       - name: build
