@@ -25,7 +25,6 @@ class HelpView extends StatelessWidget {
   ### Functions of buttons
 
   * ![help](icon://help) : Show this help.
-  * ![settings](icon://settings) : Show the settings dialog.
   * ![open-shell](icon://open_in_browser) : Open the current image in Explorer or Finder
 
   * Keyboard shortcuts
@@ -33,7 +32,7 @@ class HelpView extends StatelessWidget {
   * The Up arrow key moves to an image 10 steps previous, The Down arrow key moves to an image 10 steps next.
 
   ### Used flutter libraries
-    clipboard,desktop_drop,expandable_text,flutter_markdown,get,image,oktoast,path_provider,settings_ui,simple_logger,window_manager
+    clipboard,desktop_drop,expandable_text,flutter_markdown,get,image,oktoast,path_provider,settings_ui,simple_logger,window_manager ...
 
   """;
 

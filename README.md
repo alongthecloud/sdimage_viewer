@@ -17,12 +17,13 @@ This program creates "sdviewer-alongthecloud" directory under the Documents dire
 * Shows prompts, negative prompts, etc. if exiftool is available
 * Prompts and negative prompts can be copied to clipboard with one click
 * Navigate to previous/next image in the same directory (on Mac, only when dragging and dropping directories)
-* You can attach a watermark image to the image and save it to a specific folder
-* Adds an start up page
+* ~~You can attach a watermark image to the image and save it to a specific folder~~
 * Current file can be opened in Explorer or Finder
 
  - [x] A1111
  - [x] InvokeAI
+
+I've been using ComfyUI a lot lately, so I added the ability to parse and display some information from the workflow.
 
 for more information, see in-program help
 
@@ -36,8 +37,7 @@ You need Flutter and Visual Studio or XCode to run and build for desktop app.
 4. build with `flutter build` command
 
 * There is a problem that exiftool does not work and can't display metadata when this program is run from the Applications directory. This is a part that was confirmed to work properly in a previous version.
-* since I am not using a Mac very much and am considering replacing exiftool, there are no plans to resolve this issue for the time being.
-* There seems to be no problem when running with `flutter run`.
+* currently not testing Mac.
 
 ## Install exiftool
 ### Windows
@@ -63,7 +63,6 @@ Drag and drop images to the window
 
 1. if you have exiftool installed, you will see the information on the right panel
 2. click on the prompt and negative prompt to copy contents to the clipboard
-3. click on model hash to go to civitai site
 
 If you drag and drop a directory containing images, the first image in that directory will appear and you can move to the previous/next image by arrow keys.
 
