@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:simple_logger/simple_logger.dart';
 import '../model/ViewerState.dart';
 import '../model/AppConfig.dart';
 import '../util/ImageUtil.dart';
@@ -74,9 +73,6 @@ class ImagePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var logger = SimpleLogger();
-    // logger.info("ImageView::Paint");
-
     if (image != null) {
       var imagePaint = Paint()..filterQuality = FilterQuality.high;
       var imgWidth = image!.width.toDouble();

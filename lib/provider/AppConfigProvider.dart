@@ -25,7 +25,7 @@ class AppConfigProvider extends ChangeNotifier {
 
     String? jsonText = prefs.getString('appConfig');
     if (jsonText != null) {
-      appConfig = deserialize<AppConfig>(jsonText!);
+      appConfig = deserialize<AppConfig>(jsonText);
     }
   }
 

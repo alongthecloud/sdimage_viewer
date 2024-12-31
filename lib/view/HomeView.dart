@@ -15,7 +15,7 @@ import './ImagePropertyView.dart';
 import './ImageView.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -56,9 +56,6 @@ class _HomeViewState extends State<HomeView> {
             Path.basename(viewStateProvider.viewerState.curImagePath);
         windowManager.setTitle(imageFilename);
       }
-
-      var appConfigProvider =
-          Provider.of<AppConfigProvider>(context, listen: false);
 
       final buttonBar = ButtonBarView(
           viewerState: viewStateProvider.viewerState, iconSize: 24);

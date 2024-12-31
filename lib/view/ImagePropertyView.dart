@@ -1,16 +1,14 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:simple_logger/simple_logger.dart';
 import 'package:expandable_text/expandable_text.dart';
 import '../model/ViewerState.dart';
 import '../util/WidgetUtil.dart';
 import '../util/Util.dart';
-import '../util/MetaKeyword.dart';
 
 class ImagePropertyView extends StatelessWidget {
   final ViewerState viewerState;
 
-  ImagePropertyView({Key? key, required this.viewerState}) : super(key: key);
+  const ImagePropertyView({super.key, required this.viewerState});
 
   static Widget _tableView(BuildContext context, Map<String, String> table) {
     var rows = <TableRow>[];

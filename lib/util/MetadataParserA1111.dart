@@ -1,6 +1,4 @@
 import 'dart:core';
-import 'package:simple_logger/simple_logger.dart';
-
 import 'MetaKeyword.dart';
 import 'MetadataParser.dart';
 
