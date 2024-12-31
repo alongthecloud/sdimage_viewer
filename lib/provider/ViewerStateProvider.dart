@@ -36,7 +36,7 @@ class ViewerStateProvider extends ChangeNotifier {
 
     String? jsonText = prefs.getString('dataManager');
     if (jsonText != null) {
-      return deserialize<DataManager>(jsonText!);
+      return deserialize<DataManager>(jsonText);
     } else {
       return DataManager(recentfiles: []);
     }

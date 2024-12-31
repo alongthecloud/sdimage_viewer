@@ -1,9 +1,10 @@
 import 'package:flutter/widgets.dart';
+import 'package:simple_logger/simple_logger.dart';
+import 'package:json_serializer/json_serializer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/AppConfig.dart';
-import '../model/ImageManager.dart';
 
 class AppConfigProvider extends ChangeNotifier {
-  final ImageManager _imageManager = ImageManager();
   late AppConfig appConfig;
 
   AppConfigProvider() {
@@ -12,30 +13,34 @@ class AppConfigProvider extends ChangeNotifier {
   }
 
   void init() async {
-    appConfig.watermark ??= WaterMarkConfig();
-    appConfig.general ??= GeneralConfig();
-
-    save();
-    update();
+    Future<void> load = this.load();
+    load.then((_) {
+      save();
+      update();
+    });
   }
 
-  Future<void> save() async {}
+  Future<void> load() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  Future<void> _updateWatermarkImage() async {
-    var waterMarkConfig = appConfig.watermark;
-    if (waterMarkConfig != null && waterMarkConfig.enable) {
-      if (waterMarkConfig.imagePath.isNotEmpty) {
-        var image =
-            await _imageManager.getImageDataFromFile(waterMarkConfig.imagePath);
-
-        appConfig.appUserData.waterMarkImage = image;
-        return;
-      }
+    String? jsonText = prefs.getString('appConfig');
+    if (jsonText != null) {
+      appConfig = deserialize<AppConfig>(jsonText!);
     }
   }
 
+  Future<void> save() async {
+    var logger = SimpleLogger();
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var jsonText = serialize(appConfig);
+    await prefs.setString('appConfig', jsonText);
+
+    logger.info("AppConfig saved.");
+  }
+
   void update() async {
-    await _updateWatermarkImage();
     notifyListeners();
   }
 }

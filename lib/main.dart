@@ -23,7 +23,6 @@ void main() async {
 
   JsonSerializer.options = JsonSerializerOptions(types: [
     UserType<AppConfig>(AppConfig.new),
-    UserType<GeneralConfig>(GeneralConfig.new),
     UserType<DataManager>(DataManager.new),
   ]);
 

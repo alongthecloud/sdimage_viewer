@@ -12,11 +12,23 @@ import '../util/PathUtil.dart';
 import '../util/Metadata.dart';
 import '../provider/ViewerStateProvider.dart';
 
+class FileInfo {
+  String path = "";
+  int size = 0;
+  DateTime modifiedDate = DateTime(0);
+
+  @override
+  String toString() {
+    return 'FileInfo{path: $path, size: $size, modifiedDate: $modifiedDate}';
+  }
+}
+
 class ViewerState {
   final ImageManager _imageManager = ImageManager();
-  DataManager dataManager = DataManager(recentfiles: <String>[]);
+  DataManager dataManager =
+      DataManager(recentfiles: <String>[], sortType: 0, sortDescending: false);
 
-  List<FileSystemEntity> imageFileList = [];
+  List<FileInfo> imageFileList = [];
   String curImagePath = "";
 
   int curImageIndex = -1;
@@ -36,6 +48,25 @@ class ViewerState {
     }
 
     return filePath;
+  }
+
+  void addRecentFile(String filePath) {
+    if (dataManager.recentfiles.length >= 3) {
+      dataManager.recentfiles.removeAt(0);
+    }
+
+    dataManager.recentfiles.add(filePath);
+  }
+
+  void changeSortType(int sortType, bool sortDescending) {
+    bool isChanged = (dataManager.sortType != sortType ||
+        dataManager.sortDescending != sortDescending);
+    if (!isChanged) return;
+
+    dataManager.sortType = sortType;
+    dataManager.sortDescending = sortDescending;
+
+    dragImage(curImagePath);
   }
 
   void save() async {
@@ -89,12 +120,47 @@ class ViewerState {
         }
       }),
       _imageManager.getImageDataFromFile(curImagePath).then((value) {
-        dataManager.addRecentFile(curImagePath);
+        addRecentFile(curImagePath);
         return curImageData = value;
       })
     ]);
 
     return curImageData != null ? true : false;
+  }
+
+  void _sortImageFiles() {
+    var logger = SimpleLogger();
+    logger.info("sortImageFiles");
+
+    switch (dataManager.sortType) {
+      case 0: // filename
+        if (dataManager.sortDescending) {
+          imageFileList.sort((a, b) => b.path.compareTo(a.path));
+        } else {
+          imageFileList.sort((a, b) => a.path.compareTo(b.path));
+        }
+        break;
+      case 1: // date
+        if (dataManager.sortDescending) {
+          imageFileList
+              .sort((a, b) => b.modifiedDate.compareTo(a.modifiedDate));
+        } else {
+          imageFileList
+              .sort((a, b) => a.modifiedDate.compareTo(b.modifiedDate));
+        }
+        break;
+      case 2: // size
+        if (dataManager.sortDescending) {
+          imageFileList.sort((a, b) => b.size.compareTo(a.size));
+        } else {
+          imageFileList.sort((a, b) => a.size.compareTo(b.size));
+        }
+        break;
+      default:
+        return;
+    }
+
+    logger.info("${imageFileList.toString()}, ${dataManager.sortDescending}");
   }
 
   int _getImageFileList(Directory dir) {
@@ -112,8 +178,17 @@ class ViewerState {
 
     if (files.isEmpty) return 0;
 
-    imageFileList = files;
-    imageFileList.sort((a, b) => a.path.compareTo(b.path));
+    for (var file in files) {
+      FileInfo fileInfo = FileInfo();
+      fileInfo.path = file.path;
+      FileStat fileStat = file.statSync();
+      fileInfo.size = fileStat.size;
+      fileInfo.modifiedDate = fileStat.modified;
+
+      imageFileList.add(fileInfo);
+    }
+
+    _sortImageFiles();
     return imageFileList.length;
   }
 

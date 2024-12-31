@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import '../provider/ViewerStateProvider.dart';
 import '../provider/AppConfigProvider.dart';
 import '../model/ViewerState.dart';
+import '../model/DataManager.dart';
 import './ImagePropertyView.dart';
 import './ImageView.dart';
 
@@ -101,6 +102,7 @@ class _HomeViewState extends State<HomeView> {
   Widget _bottomBarWidget(
       BuildContext context, ViewerStateProvider viewStateProvider) {
     ViewerState viewerState = viewStateProvider.viewerState;
+    var currentPositionText = viewStateProvider.getCurrentPositionText();
 
     var bottomBarItems = <Widget>[
       IconButton(
@@ -113,7 +115,7 @@ class _HomeViewState extends State<HomeView> {
           onPressed: () {
             viewStateProvider.moveToRelativeStep(-1);
           }),
-      Text(viewStateProvider.getCurrentPositionText()),
+      Row(children: [SortByButton(), Text(currentPositionText)]),
       IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: () {
@@ -174,5 +176,54 @@ class _HomeViewState extends State<HomeView> {
       rightWidget,
       bottomWidget,
     ]);
+  }
+}
+
+class SortByButton extends StatelessWidget {
+  const SortByButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ViewerStateProvider>(
+        builder: (context, viewStateProvider, child) {
+      var dataManager = viewStateProvider.viewerState.dataManager;
+
+      var arrow = dataManager.sortDescending ? '↓' : '↑';
+      var sortType = dataManager.sortType;
+
+      return PopupMenuButton<String>(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Sort by ${SortType.names[sortType]} $arrow'),
+              const Icon(Icons.arrow_drop_down),
+            ],
+          ),
+        ),
+        onSelected: (String result) {
+          var newSortType = int.parse(result);
+          bool sortDescending = (dataManager.sortType == newSortType)
+              ? !dataManager.sortDescending
+              : dataManager.sortDescending;
+          viewStateProvider.viewerState
+              .changeSortType(newSortType, sortDescending);
+          viewStateProvider.viewerState.updateImage().then((_) {
+            viewStateProvider.update();
+          });
+        },
+        itemBuilder: (BuildContext context) {
+          var menuItems = <PopupMenuEntry<String>>[];
+          for (int i = 0; i < SortType.names.length; i++) {
+            menuItems.add(PopupMenuItem<String>(
+                value: i.toString(),
+                child: Text('Sort by ${SortType.names[i]}')));
+          }
+
+          return menuItems;
+        },
+      );
+    });
   }
 }
