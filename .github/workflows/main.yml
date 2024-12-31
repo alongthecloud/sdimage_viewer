@@ -18,6 +18,8 @@ jobs:
         run: flutter pub get
       - name: enable windows build
         run: flutter config --enable-windows-desktop
+      - name: Disable Flutter telemetry
+        run: flutter --disable-telemetry
       - name: build
         run: flutter build windows --release
       - name: Zip release
