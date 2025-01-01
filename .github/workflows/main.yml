@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - '*'
-        
+
 jobs:
   win-build-and-package:
     runs-on: windows-latest
@@ -13,7 +13,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.16.0'
+          flutter-version: '3.27.1'
       - name: get dependencies
         run: flutter pub get
       - name: enable windows build
@@ -26,7 +26,7 @@ jobs:
         uses: TheDoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: SDImageViewer-${{github.ref_name}}-windows.zip  
+          filename: SDImageViewer-${{github.ref_name}}-windows.zip
           directory: build/windows/x64/runner/Release
       - name: Window release
         uses: softprops/action-gh-release@v1
@@ -34,4 +34,3 @@ jobs:
         with:
           token: ${{ secrets.REPO_TOKEN }}
           files: build/windows/x64/runner/Release/SDImageViewer-${{github.ref_name}}-windows.zip
-          

@@ -15,7 +15,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.16.0'
+          flutter-version: '3.27.1'
       - name: get dependencies
         run: flutter pub get
       - name: Disable Flutter telemetry
